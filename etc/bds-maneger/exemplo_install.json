@@ -1,0 +1,16 @@
+{
+    "global": {
+        "name_map": "New_World",
+        "port": "19132",
+    },
+    "install": {
+        "dir": "/home/minecraft"
+    },
+    "update": {
+        "dir_update": "/tmp/Minecraft_update",
+        "dir_backup": "/etc/bds-manegermcpe-backup"
+    },
+    "gdrive":{
+        "ID": "1-FWzQJWhhJK_00ETU4uVOg6R5c5p_yMP"
+    }
+}

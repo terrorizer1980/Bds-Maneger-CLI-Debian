@@ -1,0 +1,13 @@
+Package: bds
+Version: 2.12-1
+Section: custom
+Priority: optional
+Architecture: all
+Homepage: https://srherobrine23.com/sirherobrine23/bds-install-debian-develop
+Essential: no
+Depends: screen, dos2unix, jq, zip, unzip, net-tools, bds-common, gdrive
+Maintainer: Matheus Sampaio Queiroga (Sirherobrine23) <srherobrine20@gmail.com>
+Description: Pequeno script para o gerenciamento do Minecraft Bedrock Server
+ Pode ser simples de usar mais tem varias funcionalidades que vai ajudar muito além de gerenciamento do Minecraft Bedrock Server
+ .
+ Com o tempo o software recebera pequenas novidades não muitas mais o suficiente

@@ -1,0 +1,334 @@
+#!/bin/bash
+echo "Olá $USER"
+ROOTS="0"
+if [ "$EUID" -ne $ROOTS ]; then
+echo "Você não está executando o script com root ou sudo, por favor execute de novo o com: sudo $0 $1"
+exit 255
+fi
+if [[ -d /usr/opt/bds-maneger ]]; then
+NULL=/dev/null
+else
+echo "por favor instale o arquivo .deb do nosso repositorio ou é um bug"
+exit 12
+fi
+# inclusão do progess bar direto no bds-install
+# -------------------------------------------------------------------------------------------------
+
+# https://github.com/pollev/bash_progress_bar - See license at end of file
+
+# Usage:
+# Source this script
+# enable_trapping <- optional to clean up properly if user presses ctrl-c
+# setup_scroll_area <- create empty progress bar
+# draw_progress_bar 10 <- advance progress bar
+# draw_progress_bar 40 <- advance progress bar
+# block_progress_bar 45 <- turns the progress bar yellow to indicate some action is requested from the user
+# draw_progress_bar 90 <- advance progress bar
+# destroy_scroll_area <- remove progress bar
+
+# Constants
+CODE_SAVE_CURSOR="\033[s"
+CODE_RESTORE_CURSOR="\033[u"
+CODE_CURSOR_IN_SCROLL_AREA="\033[1A"
+COLOR_FG="\e[30m"
+COLOR_BG="\e[42m"
+COLOR_BG_BLOCKED="\e[43m"
+RESTORE_FG="\e[39m"
+RESTORE_BG="\e[49m"
+
+# Variables
+PROGRESS_BLOCKED="false"
+TRAPPING_ENABLED="false"
+TRAP_SET="false"
+
+setup_scroll_area() {
+    # If trapping is enabled, we will want to activate it whenever we setup the scroll area and remove it when we break the scroll area
+    if [ "$TRAPPING_ENABLED" = "true" ]; then
+        trap_on_interrupt
+    fi
+
+    lines=$(tput lines)
+    let lines=$lines-1
+    # Scroll down a bit to avoid visual glitch when the screen area shrinks by one row
+    echo -en "\n"
+
+    # Save cursor
+    echo -en "$CODE_SAVE_CURSOR"
+    # Set scroll region (this will place the cursor in the top left)
+    echo -en "\033[0;${lines}r"
+
+    # Restore cursor but ensure its inside the scrolling area
+    echo -en "$CODE_RESTORE_CURSOR"
+    echo -en "$CODE_CURSOR_IN_SCROLL_AREA"
+
+    # Start empty progress bar
+    draw_progress_bar 0
+}
+
+destroy_scroll_area() {
+    lines=$(tput lines)
+    # Save cursor
+    echo -en "$CODE_SAVE_CURSOR"
+    # Set scroll region (this will place the cursor in the top left)
+    echo -en "\033[0;${lines}r"
+
+    # Restore cursor but ensure its inside the scrolling area
+    echo -en "$CODE_RESTORE_CURSOR"
+    echo -en "$CODE_CURSOR_IN_SCROLL_AREA"
+
+    # We are done so clear the scroll bar
+    clear_progress_bar
+
+    # Scroll down a bit to avoid visual glitch when the screen area grows by one row
+    echo -en "\n\n"
+
+    # Once the scroll area is cleared, we want to remove any trap previously set. Otherwise, ctrl+c will exit our shell
+    if [ "$TRAP_SET" = "true" ]; then
+        trap - INT
+    fi
+}
+
+draw_progress_bar() {
+    percentage=$1
+    lines=$(tput lines)
+    let lines=$lines
+    # Save cursor
+    echo -en "$CODE_SAVE_CURSOR"
+
+    # Move cursor position to last row
+    echo -en "\033[${lines};0f"
+
+    # Clear progress bar
+    tput el
+
+    # Draw progress bar
+    PROGRESS_BLOCKED="false"
+    print_bar_text $percentage
+
+    # Restore cursor position
+    echo -en "$CODE_RESTORE_CURSOR"
+}
+
+block_progress_bar() {
+    percentage=$1
+    lines=$(tput lines)
+    let lines=$lines
+    # Save cursor
+    echo -en "$CODE_SAVE_CURSOR"
+
+    # Move cursor position to last row
+    echo -en "\033[${lines};0f"
+
+    # Clear progress bar
+    tput el
+
+    # Draw progress bar
+    PROGRESS_BLOCKED="true"
+    print_bar_text $percentage
+
+    # Restore cursor position
+    echo -en "$CODE_RESTORE_CURSOR"
+}
+
+clear_progress_bar() {
+    lines=$(tput lines)
+    let lines=$lines
+    # Save cursor
+    echo -en "$CODE_SAVE_CURSOR"
+
+    # Move cursor position to last row
+    echo -en "\033[${lines};0f"
+
+    # clear progress bar
+    tput el
+
+    # Restore cursor position
+    echo -en "$CODE_RESTORE_CURSOR"
+}
+
+print_bar_text() {
+    local percentage=$1
+    local cols=$(tput cols)
+    let bar_size=$cols-17
+
+    local color="${COLOR_FG}${COLOR_BG}"
+    if [ "$PROGRESS_BLOCKED" = "true" ]; then
+        color="${COLOR_FG}${COLOR_BG_BLOCKED}"
+    fi
+
+    # Prepare progress bar
+    let complete_size=($bar_size*$percentage)/100
+    let remainder_size=$bar_size-$complete_size
+    progress_bar=$(echo -ne "["; echo -en "${color}"; printf_new "#" $complete_size; echo -en "${RESTORE_FG}${RESTORE_BG}"; printf_new "." $remainder_size; echo -ne "]");
+
+    # Print progress bar
+    echo -ne " Progress ${percentage}% ${progress_bar}"
+}
+
+enable_trapping() {
+    TRAPPING_ENABLED="true"
+}
+
+trap_on_interrupt() {
+    # If this function is called, we setup an interrupt handler to cleanup the progress bar
+    TRAP_SET="true"
+    trap cleanup_on_interrupt INT
+}
+
+cleanup_on_interrupt() {
+    destroy_scroll_area
+    exit
+}
+
+printf_new() {
+    str=$1
+    num=$2
+    v=$(printf "%-${num}s" "$str")
+    echo -ne "${v// /$str}"
+}
+
+# --------------- Codigo ------------------------------
+
+TMP=/tmp/Minecraft-temp
+sudo mkdir /tmp 
+sudo rm -rf $TMP/level.txt >> $USUARIO/log.txt 2>&1 ;
+PASTA_PRINCIPAL=/usr/opt/bds-maneger
+json(){
+     PATH_TO_INSTALL="$(cat "/etc/bds-maneger/install.json" | jq ".install.dir" | sed 's|"||g')"
+     PORTAD="$(cat "/etc/bds-maneger/install.json" | jq ".global.port" | sed 's|"||g')"
+     MAPA_DO_SERVIDOR="$(cat "/etc/bds-maneger/install.json" | jq ".global.name_map" | sed 's|"||g')"
+     level="$(cat "/etc/bds-maneger/install.json" | jq ".global.name_map" | sed 's|"||g')"
+     ID="$(cat "/etc/bds-maneger/install.json" | jq ".gdrive.ID" | sed 's|"||g')"
+     MINE2Sh23="$(cat "/etc/bds-maneger/install.json" | jq ".update.dir_backup" | sed 's|"||g')"
+    echo ""
+    echo "Pasta de Instalação:                $PATH_TO_INSTALL"
+    echo "Porta do Servido:                   $PORTAD"
+    echo "Nome do Mapa (Sendo descontinuado): $MAPA_DO_SERVIDOR"
+    echo "nome do Mapa (Sendo descontinuado): $level"
+}
+
+ipbysh23(){
+      #Comando --ip variaveis
+      IP_V4=$(ip addr | grep 'inet' | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1)
+      SEARCH_IPV6=$(ip -6 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)
+      IP_V6=$(ifconfig $SEARCH_IPV6 | grep "inet6" | awk -F' ' '{print $2}' | awk '{print $1}') 
+      IP_PUBLICO=$(wget -qO- http://ipecho.net/plain)
+      #Echo's
+            echo "Seu IPv4 é $IP_V4 para Jogar localmente , e o Seu IPv6 é $(echo -ne $IP_V6)"
+            echo " "
+            echo "Caso Queira Jogar Remotamento com alguém Abra as Portas 19132 e 19133 no seu Roteador ou seu Firewall, seu IPv4 Publico é $IP_PUBLICO"
+            echo "Também verifique se sua operadora ou provedor libera as portas do servidor. contate-os"
+      echo " ";
+}
+apache2-installbysh23(){
+
+      #Instalação do apache2
+      echo "Instalando o Apache2"
+       apt update >> /dev/null 2>&1 
+       apt install apache2 -y >> /dev/null 2>&1 
+
+      # Removendo pasta HTML e Adicionando denovo
+      rm -rf /var/www/html/
+      mkdir /var/www/html/
+
+      # Pegando as config
+      echo "Agora vamos começar a configurar o nova pagina do Apache"
+      sleep 2
+      echo "Vamos precicar de algumas informações como:"
+      echo "Dominio caso você tenha"
+      echo "nome que aparacera na Pagina. etc ..."
+      sleep 3
+      
+      read -rp "Qual será o dominio ou nos da o IP publico: " -e -i "$(wget -qO- http://ipecho.net/plain)" IPDOMAIN
+      read -rp "Qual é o nome que aparacera na pagina: " -e -i "$(cat $TMP/level.txt)" MAINSERVERNAME
+
+      # Montando as Configurações
+      sed -i "s|ENDEREÇODOSERVIDOROUIP|$IPDOMAIN|g" "/usr/opt/bds-maneger/html-files/index.html"
+      sed -i "s|MAINSERVERNAME|$MAPA_DO_SERVIDOR|g" "/usr/opt/bds-maneger/html-files/index.html"
+      sed -i "s|PORTASERVER|$PORTAD|g" "/usr/opt/bds-maneger/html-files/index.html"
+
+      # Movendo as configurações
+      cp -rf /usr/opt/bds-maneger/html-files/* /var/www/html/
+}
+externobysh23(){
+      # vsftp
+       apt install -y vsftpd samba >> /dev/null 2>&1 ;
+
+      #config
+      sed -i "s|root||g" "/etc/ftpusers"
+
+      rm /etc/samba/smb.conf
+      cp -rf /usr/opt/bds-maneger/smb.conf /etc/samba/
+      cp -rf /usr/opt/bds-maneger/vsftp.conf /etc/vsftpd.conf
+
+      service smbd restart
+      service vsftpd restart
+
+echo "Para adicionar um usuario no Smb use smbpasswd -a username"
+echo "Para usar o ftp não precisar de nada a mais para configura só ter um usuario no sistema"
+
+}
+sistemabysh23(){
+    echo "Iniciando as Configurações do arquivo para Inicialização junto com o Sistema"
+    cp /usr/opt/bds-maneger/start-on-system.sh /etc/init.d/bds
+    chmod a+x /etc/init.d/bds;
+    update-rc.d bds defaults
+    update-rc.d bds enable
+    echo "pronto ele inicia junto com sistema, o comando abaixo pode ajudar"
+    echo " "
+    echo ' service bds start|stop|restart'
+    echo " "
+    echo "Para desativar o Inicio altomatico execute $0 --remover-service ou  $0 -R"
+    
+}
+removerservicesh23(){
+update-rc.d BDS defaults-disabled
+update-rc.d BDS disable
+rm -rf /etc/init.d/BDS
+}
+
+if [[ -e /etc/bds-maneger/install.json ]];then
+json
+else
+echo "Por favor coloque um aquivo com o nom e `install.json` na pasta /etc/bds-maneger
+ou se não copia e renomeia o arquivo `exemplo_install.json`"
+exit 127
+fi
+
+while [ true ]; do
+enable_trapping
+setup_scroll_area
+read -rp "
+-u : Atualizar o Software do BDS
+-b : Ativar o Backup dos Software Por completo (Recomendado)
+-s : Ativar a inicialização do BDS junto com o Sistema Operacional
+-P : mostra seu Ip local e público
+-a : Instalar o Apache Web Server para adicionar o minecraft ao abrir no navegador seu ip/dominio
+-R : Remover a inicialização do servidor junto com o sistema operacional
+-h : ajuda um pouco mais detalhada
+-e : sair do menu
+
+
+Qual é Sua Opção: " -e -i "" LE
+#
+case $LE in
+-u ) apt update && apt install bds-common -y ;;
+-s ) sistemabysh23 ;;
+-P ) ipbysh23 ;;
+-a ) apache2-installbysh23 ;;
+-f ) externobysh23 ;;
+-R ) removerservicesh23 ;;
+-c ) crontabsh23 ;;
+-h ) cat /usr/opt/bds-maneger/help.txt ; echo " ";;
+-e ) break;;
+ * ) echo "Essa opção não existe";echo " "
+esac
+done
+destroy_scroll_area
+# --------------- Codigo ------------------------------
+echo " "
+echo "--------------"
+echo " "
+echo "qualquer erro no script me comunique no https://github.com/Sirherobrine23/Minecraft-Bedrock-auto-install/issues"
+echo " "
+exit 0
