@@ -1,7 +1,6 @@
 Package: bds
 Version: 2.12-1
-Section: custom
-Priority: optional
+Section: bysh23
 Architecture: all
 Homepage: https://srherobrine23.com/sirherobrine23/bds-install-debian-develop
 Essential: no
