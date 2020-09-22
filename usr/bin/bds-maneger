@@ -1,4 +1,4 @@
-#!/bin/bash
+ds#!/bin/bash
 echo "Olá $USER"
 ROOTS="0"
 if [ "$EUID" -ne $ROOTS ]; then
@@ -290,8 +290,7 @@ rm -rf /etc/init.d/BDS
 if [[ -e /etc/bds-maneger/install.json ]];then
 json
 else
-echo "Por favor coloque um aquivo com o nom e `install.json` na pasta /etc/bds-maneger
-ou se não copia e renomeia o arquivo `exemplo_install.json`"
+echo "Por favor coloque um aquivo com o nome install.json na pasta /etc/bds-maneger ou se não, copia e renomeia o arquivo exemplo_install.json"
 exit 127
 fi
 
