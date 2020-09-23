@@ -1,10 +1,11 @@
 Package: bds-maneger
-Version: 1.1-0
+Version: 1.1-3
 Section: bysh23
 Architecture: all
 Homepage: https://srherobrine23.com/sirherobrine23/bds-install-debian-develop
 Essential: no
 Depends: screen, dos2unix, jq, zip, unzip, net-tools, bds-common, gdrive
+Conflicts: bds, bds-install
 Maintainer: Matheus Sampaio Queiroga (Sirherobrine23) <srherobrine20@gmail.com>
 Description: Pequeno script para o gerenciamento do Minecraft Bedrock Server
  Pode ser simples de usar mais tem varias funcionalidades que vai ajudar muito além de gerenciamento do Minecraft Bedrock Server

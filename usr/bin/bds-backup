@@ -1,16 +1,21 @@
 #!/bin/bash
+echo "Iniciando o backup"
 # Separando
-FILESJSON=/etc/bds-manager/install.json
 PATH_TO_INSTALL="/etc/BDS-Common/worlds"
-ID="$(cat "$FILESJSON" | jq ".gdrive.ID" | sed 's|"||g')"
-BACKUP="$(cat "$FILESJSON" | jq ".global.backup_folder" | sed 's|"||g')"
+ID="$(cat /etc/bds-maneger/install.json | jq ".gdrive.ID" | sed 's|"||g')"
+BACKUP="$(cat /etc/bds-maneger/install.json | jq ".global.backup_folder" | sed 's|"||g')"
 # Separando
-DATE="$(TZ=UTC+3 date +"%d@%m@%Y_%H-%M-%S")"
+DATE=$(TZ=UTC+3 date +"%d-%m-%Y_%H-%M-%S")
 GDRIVEDATE="$(TZ=UTC+3 date +"%d/%m/%Y-%H-%M-%S")"
-TM="/tmp/"
-GDRIVE_FOLDE=$(gdrive mkdir $GDRIVEDATE -p "$MKDIRID" | sed 's| created||g' | sed 's|Directory ||g')
-cd "$PATH_TO_INSTALL/worlds"
-zip "$TM/$DATE.zip" -r *
-cp "$TM/$DATE.zip" "$BACKUP"
-#gdrive upload "$DATE.zip" --parent "$GDRIVE_FOLDE"
-rm "$TM/$DATE.zip"
+TM="/tmp"
+echo "Pegando a ID da nova pasta"
+GDRIVE_FOLDE=$(gdrive mkdir $GDRIVEDATE -p $ID | sed 's| created||g' | sed 's|Directory ||g')
+echo "ok"
+cd "$PATH_TO_INSTALL"
+echo "Nome do Backup: $DATE"
+echo "Nome da subpasta: $GDRIVEDATE"
+echo "Id da subpasta: $GDRIVE_FOLDE"
+zip "$DATE.zip" -r *
+cp "$DATE.zip" "$BACKUP"
+gdrive upload "$DATE.zip" --parent "$GDRIVE_FOLDE"
+rm "$DATE.zip"

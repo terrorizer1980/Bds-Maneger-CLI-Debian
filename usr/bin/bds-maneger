@@ -1,6 +1,14 @@
 #!/bin/bash
 echo "Olá $USER"
 ROOTS="0"
+BDS_COMMON_INSTALLED=$(command -v bds;echo $?)
+if [ $BDS_COMMON_INSTALLED = '0' ]
+then
+ echo "..."
+else
+ echo "Por Favor Instale o bds-common com apt install bds-common"
+ exit 127
+fi
 if [ "$EUID" -ne $ROOTS ]; then
 echo "Você não está executando o script com root ou sudo, por favor execute de novo o com: $0 $1"
 exit 23
