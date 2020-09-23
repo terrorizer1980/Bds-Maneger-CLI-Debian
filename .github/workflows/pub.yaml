@@ -23,7 +23,4 @@ jobs:
 
       - name: DPKG Build and Publish
         run: |
-          rm -rf *.git*
-          rm -rf LICE*
-          rm -rf README*
           init_23

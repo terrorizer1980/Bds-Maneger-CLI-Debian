@@ -1,26 +1,16 @@
 #!/bin/bash
 # Separando
-echo "adiciona essa linha a seguir no crontab"
-echo "$CRON bash /bc/backup-mcpe.sh"
-read -rp "De [ENTER] para continua" -e -i "" NULL
-crontab -e
-}
 FILESJSON=/etc/bds-manager/install.json
-PATH_TO_INSTALL="$(cat "$FILESJSON" | jq ".install.dir" | sed 's|"||g')"
-MAPA_DO_SERVIDOR="$(cat "$FILESJSON" | jq ".global.name_map" | sed 's|"||g')"
+PATH_TO_INSTALL="/etc/BDS-Common/worlds"
 ID="$(cat "$FILESJSON" | jq ".gdrive.ID" | sed 's|"||g')"
+BACKUP="$(cat "$FILESJSON" | jq ".global.backup_folder" | sed 's|"||g')"
 # Separando
-
-DATE="$(TZ=UTC+3 date +"%H-%M-%S")"
-DA2TE="$(TZ=UTC+3 date +"%d/%m/%Y-%H-%M-%S")"
+DATE="$(TZ=UTC+3 date +"%d@%m@%Y_%H-%M-%S")"
+GDRIVEDATE="$(TZ=UTC+3 date +"%d/%m/%Y-%H-%M-%S")"
 TM="/tmp/"
-
-
-rm -rf "$TM/ID.txt"
-GDRIVE_FOLDE=$( gdrive mkdir $DA2TE -p "$MKDIRID" | sed 's| created||g' | sed 's|Directory ||g' )
-
-cd "$PATH_TO_INSTALL/worlds/"
-zip "$DATE.zip" -r *
-cp "$DATE.zip" "$PATH_TO_BACKUP/"
-gdrive upload "$DATE.zip" --parent "$GDRIVE_FOLDE"
-rm "$DATE.zip"
+GDRIVE_FOLDE=$(gdrive mkdir $GDRIVEDATE -p "$MKDIRID" | sed 's| created||g' | sed 's|Directory ||g')
+cd "$PATH_TO_INSTALL/worlds"
+zip "$TM/$DATE.zip" -r *
+cp "$TM/$DATE.zip" "$BACKUP"
+#gdrive upload "$DATE.zip" --parent "$GDRIVE_FOLDE"
+rm "$TM/$DATE.zip"

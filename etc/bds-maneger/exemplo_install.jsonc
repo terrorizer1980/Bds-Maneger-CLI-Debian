@@ -1,0 +1,13 @@
+{
+    // Por Favor antes de fazer qualquer coisa Retire os comentarios (// ..) se não os comandos não vão ser reconhecidos no arquivo install.json
+    "global":{
+        "port": "19132",
+        "backup_folder": "/etc/BDS-Common/Backup"
+    },
+    "gdrive":{
+        "ID": "1-FWzQJWhhJK_00ETU4uVOg6R5c5p_yMP" // Exemplo de ID da pasta
+    },
+    "pages":{
+        "domain": "exemplo.com" // Não incluir o http:// ou https:// isso será feito automaticamente
+    }
+}

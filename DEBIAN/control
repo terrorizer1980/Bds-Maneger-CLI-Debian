@@ -1,5 +1,5 @@
-Package: bds
-Version: 2.12-1
+Package: bds-maneger
+Version: 1.1-0
 Section: bysh23
 Architecture: all
 Homepage: https://srherobrine23.com/sirherobrine23/bds-install-debian-develop

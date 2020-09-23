@@ -1,6 +1,6 @@
 ?package(bds-stable):needs="x11" \
   section="Applications/Sirherobrine23/Minecraft" \
   hints="By Sirherobrine23" \
-  title="BDS" \
+  title="bds" \
   icon="bds-install" \
   command="/opt/google/chrome/google-chrome"

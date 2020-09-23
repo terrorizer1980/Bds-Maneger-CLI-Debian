@@ -1,27 +1,27 @@
 opções para instalação:
 
-    -i    - Instalação do BDS (Obsoleto agora será em um pacote separado)
-    -u    - Atualização do BDS (Opção quando houver uma atualização do Minecraft Bedrock)
-    -b    - Ativar o Backup do Mapa apos para o Servidor BDS (Opcional)
-    -s    - Incializar o BDS a sistema iniciar e Deixar o BDS em segundo Plano (Script Obrigatorio)
+    -i    - Instalação do bds (Obsoleto agora será em um pacote separado)
+    -u    - Atualização do bds (Opção quando houver uma atualização do Minecraft Bedrock)
+    -b    - Ativar o Backup do Mapa apos para o Servidor bds (Opcional)
+    -s    - Incializar o bds a sistema iniciar e Deixar o bds em segundo Plano (Script Obrigatorio)
     -P    - Mostrar seu IPs
     -a    - Instalar o Apache2 para adicionar o Servidor ao acessae pelo Navegadores tipo o Chrome, Firefox ...
     -f    - Ativa acesso dos arquivos do Servidor via SMB (SAMBA) e FTP (VSFTPD)
-    -R    - Remover auto inicialização do BDS
-    -r    - Remoção do Script, não será desistalado o BDS e outros programas já instalado
+    -R    - Remover auto inicialização do bds
+    -r    - Remoção do Script, não será desistalado o bds e outros programas já instalado
 
--u: Com os lancamentos continuos do Minecraft Bedrock edition temos que manter atualizado o software do servidor BDS;
+-u: Com os lancamentos continuos do Minecraft Bedrock edition temos que manter atualizado o software do servidor bds;
 
 -b: Para quem não quer perder seus backups após desligar o Servidor podemos ter um backup não é, backups continuos será mais tarde;
 
--s: Para quem vai instalar o BDS é bom ter um script que já inicie quando o servidor para ou precissar ser reiniciado;
+-s: Para quem vai instalar o bds é bom ter um script que já inicie quando o servidor para ou precissar ser reiniciado;
 
 -P: Mostrar seu ips locais e seu im externo (IP externo por enquanto so IPv4);
 
 -a: -;
 
--f: Para quém quer acessar seus arquivos do BDS teremos um servidor smb e ftp pré-configurado pelo script;
+-f: Para quém quer acessar seus arquivos do bds teremos um servidor smb e ftp pré-configurado pelo script;
 
 -r: para quem não gostou basta remover a pasta atual e ficar feliz, e depois nos falar que merda deu no "https://github.com/Sirherobrine23/Minecraft-Bedrock-auto-install/issues/new";
 
--R: Para quem quiser Incializar o BDS manualmente;
+-R: Para quem quiser Incializar o bds manualmente;

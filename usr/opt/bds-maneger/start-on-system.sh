@@ -9,12 +9,12 @@
 # Short-Description:    Minecraft Manager stating Minecraft Bedrock Server
 ### END INIT INFO
 
-NAME="BDS"
+NAME="bds"
 if [[ "$EUID" -ne 0 ]]; then
 echo "Você não está executando o service com root ou sudo";exit 1
 fi
 startsh23(){
-        screen -dmS bedrock BDS
+        screen -dmS bedrock bds
 }
 stopsh23(){
     screen -S bedrock -p 0 -X stuff 'say server in stop en 10 Sec\n'

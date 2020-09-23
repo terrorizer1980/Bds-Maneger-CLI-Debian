@@ -1,4 +1,8 @@
 #! /bin/bash
+if [ "$EUID" -ne $ROOTS ]; then
+echo "Você não está executando o script com root ou sudo, por favor execute de novo o com: $0 $1"
+exit 13
+fi
 cd /etc/BDS-Common/worlds/
 # Var
 MENU="Mapa"
