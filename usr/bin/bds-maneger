@@ -1,13 +1,10 @@
 #!/bin/bash
-echo "Olá $USER"
+echo "Olá"
 ROOTS="0"
-BDS_COMMON_INSTALLED=$(command -v bds;echo $?)
-if [ $BDS_COMMON_INSTALLED = '0' ]
-then
+if command -v bds >/dev/null 2>&1;then
  echo "..."
 else
- echo "Por Favor Instale o bds-common com apt install bds-common"
- exit 127
+ echo "o comando bsd não foi indentificado, verifique se o bds-common está instalado, continuando ..."
 fi
 if [ "$EUID" -ne $ROOTS ]; then
 echo "Você não está executando o script com root ou sudo, por favor execute de novo o com: $0 $1"
@@ -19,28 +16,23 @@ TMP=/tmp/Minecraft-temp
 mkdir /tmp &> /dev/null
 rm -rf $TMP/level.txt >> $USUARIO/log.txt 2>&1 ;
 json(){
-    PORTAD="$(cat "/etc/bds-maneger/install.json" | jq ".global.port" | sed 's|"||g')"
-    DOMAINTEST=$(cat "/etc/bds-maneger/install.json" | jq ".pages.domain" | sed 's|"||g')
-    IPDOMAIN=$([ $DOMAINTEST = 'null' ] && wget -qO- http://ipecho.net/plain || echo $DOMAINTEST)
+      PORTAD="$(cat "/etc/bds-maneger/install.json" | jq ".global.port" | sed 's|"||g')"
+      DOMAINTEST=$(cat "/etc/bds-maneger/install.json" | jq ".pages.domain" | sed 's|"||g')
+      IPDOMAIN=$([ $DOMAINTEST = 'null' ] && wget -qO- http://ipecho.net/plain || echo $DOMAINTEST)
+      #
+      # Agorá mostrarar o primeiro endereço IPv4
+      IP_V4=$(ip addr | grep 'inet' | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1)
+      # Agorá mostrarar o primeiro endereço IPv6
+      IP_V6=$(ifconfig | grep "inet6" | awk -F' ' '{print $2}' | awk '{print $1}' | head -1) 
+      PUBLIC_IP="$(wget -qO- http://ipecho.net/plain)"
     echo ""
     echo "Pasta dos Arquivos:                      /etc/BDS-Common"
     echo "Porta do Servido:                        $PORTAD"
     echo "Dominio ou IP que será Utilizado:        $IPDOMAIN"
 }
 
-ipbysh23(){
-      #Comando --ip variaveis
-      IP_V4=$(ip addr | grep 'inet' | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1)
-      SEARCH_IPV6=$(ip -6 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)
-      IP_V6=$(ifconfig $SEARCH_IPV6 | grep "inet6" | awk -F' ' '{print $2}' | awk '{print $1}') 
-      IP_PUBLICO=$(wget -qO- http://ipecho.net/plain)
-      #Echo's
-            echo "Seu IPv4 é $IP_V4 para Jogar localmente , e o Seu IPv6 é $(echo -ne $IP_V6)"
-            echo " "
-            echo "Caso Queira Jogar Remotamento com alguém Abra as Portas 19132 e 19133 no seu Roteador ou seu Firewall, seu IPv4 Publico é $IP_PUBLICO"
-            echo "Também verifique se sua operadora ou provedor libera as portas do servidor. contate-os"
-      echo " ";
-}
+
+
 apache2-installbysh23(){
 
       #Instalação do apache2
@@ -104,41 +96,41 @@ else
 echo "Por favor coloque um aquivo com o nome install.json na pasta /etc/bds-maneger ou se não, copia e renomeia o arquivo exemplo_install.jsonc"
 exit 127
 fi
-
+figlet Minecraft Bedrock
+echo "By Sh23"
 while [ true ]; do
+    echo "Seu endereço IPv4:                       $IP_V4"
+    echo "Seu endereço IPv6:                       $IP_V6"
+    echo "Seu IP Publico:                          $PUBLIC_IP"
 read -rp "
 -I : Iniciar o Servidor manualmente em uma sessão Screen
 -S : Para o Servidor em sessão Screen
 -u : Atualizar o Software do bds
 -b : Ativar o Backup dos Software Por completo (Recomendado)
 -s : Ativar a inicialização do bds junto com o Sistema Operacional
--P : mostra seu Ip local e público
 -a : Instalar o Apache Web Server para adicionar o minecraft ao abrir no navegador seu ip/dominio
 -R : Remover a inicialização do servidor junto com o sistema operacional
 -h : ajuda um pouco mais detalhada
 -e : sair do menu
 
 
-Qual é Sua Opção: " -e -i "" LE
+Qual é Sua Opção: " -e -i "-" LE
 #
 case $LE in
 -I ) echo "Estamos Iniciando seu Servidor!";screen -L -Logfile /tmp/mcpe.txt -dmS bedrock bds ;;
 -U ) echo "Estamos Parando seu Servidor";screen -S bedrock -p 0 -X stuff 'stop\n' ;;
 -u ) echo "Por Favor Aguarde ...";apt update &> /dev/null && apt install bds-common -y &> /dev/null && echo "Pacote atualizado para a ultima versão" || echo "Não podemos atualizar os Software";;
 -s ) sistemabysh23 ;;
--P ) ipbysh23 ;;
 -a ) apache2-installbysh23 ;;
 -f ) externobysh23 ;;
 -R ) removerservicesh23 ;;
 -c ) crontabsh23 ;;
--h ) cat /usr/opt/bds-maneger/help.txt ; echo " ";;
 -e ) break;;
  * ) echo "Essa opção não existe";echo " "
 esac
+echo "--------------------------"
 done
 # --------------- Codigo ------------------------------
-echo " "
-echo "--------------"
 echo " "
 echo "qualquer erro no script me comunique no https://github.com/Sirherobrine23/Minecraft-Bedrock-auto-install/issues"
 echo " "
