@@ -1,7 +1,6 @@
 opções para instalação:
 
-    -i    - Instalação do bds (Obsoleto agora será em um pacote separado)
-    -u    - Atualização do bds (Opção quando houver uma atualização do Minecraft Bedrock)
+    -u    - Atualização do bds-common (Opção quando houver uma atualização do Minecraft Bedrock)
     -b    - Ativar o Backup do Mapa apos para o Servidor bds (Opcional)
     -s    - Incializar o bds a sistema iniciar e Deixar o bds em segundo Plano (Script Obrigatorio)
     -P    - Mostrar seu IPs

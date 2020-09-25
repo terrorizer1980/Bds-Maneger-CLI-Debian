@@ -122,7 +122,7 @@ read -rp "
 Qual é Sua Opção: " -e -i "" LE
 #
 case $LE in
--I ) echo "Estamos Iniciando seu Servidor!";screen -dmS bedrock bds ;;
+-I ) echo "Estamos Iniciando seu Servidor!";screen -L -Logfile /tmp/mcpe.txt -dmS bedrock bds ;;
 -U ) echo "Estamos Parando seu Servidor";screen -S bedrock -p 0 -X stuff 'stop\n' ;;
 -u ) echo "Por Favor Aguarde ...";apt update &> /dev/null && apt install bds-common -y &> /dev/null && echo "Pacote atualizado para a ultima versão" || echo "Não podemos atualizar os Software";;
 -s ) sistemabysh23 ;;
