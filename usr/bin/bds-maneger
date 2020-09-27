@@ -1,39 +1,72 @@
 #!/bin/bash
-echo "Olá"
 ROOTS="0"
-if command -v bds >/dev/null 2>&1;then
- echo "..."
-else
- echo "o comando bsd não foi indentificado, verifique se o bds-common está instalado, continuando ..."
-fi
-if [ "$EUID" -ne $ROOTS ]; then
-echo "Você não está executando o script com root ou sudo, por favor execute de novo o com: $0 $1"
-exit 23
-fi
-
+    if command -v bds >/dev/null 2>&1;then
+        echo "..."
+    else
+        echo "o comando bsd não foi indentificado, verifique se o bds-common está instalado, continuando ..."
+    fi
+    if [ "$EUID" -ne $ROOTS ]; then
+        echo "Você não está executando o script com root ou sudo, por favor execute de novo o com: $0 $1"
+        exit 23
+    fi
+    if [[ -e /etc/bds-maneger/install.json ]];then
+        test
+    else
+        echo "Por favor coloque um aquivo com o nome install.json na pasta /etc/bds-maneger ou se não, copia e renomeia o arquivo exemplo_install.jsonc"
+        exit 127
+    fi
 # --------------- Codigo ------------------------------
-TMP=/tmp/Minecraft-temp
-mkdir /tmp &> /dev/null
-rm -rf $TMP/level.txt >> $USUARIO/log.txt 2>&1 ;
-json(){
-      PORTAD="$(cat "/etc/bds-maneger/install.json" | jq ".global.port" | sed 's|"||g')"
-      DOMAINTEST=$(cat "/etc/bds-maneger/install.json" | jq ".pages.domain" | sed 's|"||g')
-      IPDOMAIN=$([ $DOMAINTEST = 'null' ] && wget -qO- http://ipecho.net/plain || echo $DOMAINTEST)
-      #
-      # Agorá mostrarar o primeiro endereço IPv4
-      IP_V4=$(ip addr | grep 'inet' | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1)
-      # Agorá mostrarar o primeiro endereço IPv6
-      IP_V6=$(ifconfig | grep "inet6" | awk -F' ' '{print $2}' | awk '{print $1}' | head -1) 
-      PUBLIC_IP="$(wget -qO- http://ipecho.net/plain)"
-    echo ""
-    echo "Pasta dos Arquivos:                      /etc/BDS-Common"
-    echo "Porta do Servido:                        $PORTAD"
-    echo "Dominio ou IP que será Utilizado:        $IPDOMAIN"
+ TMP=/tmp/Minecraft-temp
+ mkdir /tmp &> /dev/null
+ rm -rf $TMP/level.txt >> $USUARIO/log.txt 2>&1 ;
+ PORTAD="$(cat "/etc/bds-maneger/install.json" | jq ".global.port" | sed 's|"||g')";DOMAINTEST=$(cat "/etc/bds-maneger/install.json" | jq ".pages.domain" | sed 's|"||g')
+ IPDOMAIN="$([ $DOMAINTEST = 'null' ] && wget -qO- http://ipecho.net/plain || echo $DOMAINTEST)"
+ IP_V4="$(ip addr | grep 'inet' | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1)"
+ IP_V6="$(ifconfig | grep "inet6" | awk -F' ' '{print $2}' | awk '{print $1}' | head -1) "
+ PUBLIC_IP="$(wget -qO- http://ipecho.net/plain)"
+ # -------------------------------------------------------------------------------------
+
+# As opções como comandos - init
+startserver(){
+    if ! screen -list | grep -q "bedrock"; then
+        echo "Estamos Iniciando seu Servidor!"
+        screen -L -Logfile /tmp/mcpe.txt -dmS bedrock bds
+    else
+        echo "isso não pode acontecer pois já tem um servidor rodando em segundo plano"
+    fi
 }
 
+stopserver(){
+    echo "Estamos Parando seu Servidor"
+    screen -S bedrock -p 0 -X stuff 'stop\n'
+    if whiptail --title "Vai quere fazer Backup do(s) mapa(s)" --yesno "Yes e No." 10 50
+    then
+        bds-backup
+    else
+        echo "ok não vamos fazer backup"
+    fi
+}
 
+addservice(){
+    echo "Iniciando as Configurações do arquivo para Inicialização junto com o Sistema"
+    cp /usr/opt/bds-maneger/start-on-system.sh /etc/init.d/bds
+    chmod a+x /etc/init.d/bds;
+    update-rc.d bds defaults
+    update-rc.d bds enable
+    echo "Pronto"
+    sleep 2
+    echo "O BDS agora irá inicia junto com sistema, o comando que controlar o serviço é:"
+    echo 'service bds start|stop|restart'
+    echo "Para desativar o inicio automatico, basta ir na opção para remover o servico nesse mesmo comando"
+}
 
-apache2-installbysh23(){
+removerservice(){
+update-rc.d bds defaults-disabled
+update-rc.d bds disable
+rm -rf /etc/init.d/bds
+}
+
+installapache(){
 
       #Instalação do apache2
       echo "Instalando o Apache2"
@@ -53,83 +86,90 @@ apache2-installbysh23(){
       # Movendo as configurações
       cp -rf /usr/opt/bds-maneger/html-files/* /var/www/html/
 }
-externobysh23(){
+
+smbftp(){
+    echo "Instalando o samba e vsftpd"
       # vsftp
        apt install -y vsftpd samba >> /dev/null 2>&1 ;
 
+    echo "Liberando acesso do root no ftp"
       #config
       sed -i "s|root||g" "/etc/ftpusers"
 
+    echo "Terminado as configurações"
       rm /etc/samba/smb.conf
       cp -rf /usr/opt/bds-maneger/smb.conf /etc/samba/
       cp -rf /usr/opt/bds-maneger/vsftp.conf /etc/vsftpd.conf
 
+    echo "Reiniciando o serviço do Samba"
       service smbd restart
+    echo "Reiniciando o serviço do vsftpd"
       service vsftpd restart
 
-echo "Para adicionar um usuario no Smb use smbpasswd -a username"
-echo "Para usar o ftp não precisar de nada a mais para configura só ter um usuario no sistema"
-
-}
-sistemabysh23(){
-    echo "Iniciando as Configurações do arquivo para Inicialização junto com o Sistema"
-    cp /usr/opt/bds-maneger/start-on-system.sh /etc/init.d/bds
-    chmod a+x /etc/init.d/bds;
-    update-rc.d bds defaults
-    update-rc.d bds enable
-    echo "pronto ele inicia junto com sistema, o comando abaixo pode ajudar"
-    echo " "
-    echo ' service bds start|stop|restart'
-    echo " "
-    echo "Para desativar o Inicio altomatico execute $0 --remover-service ou  $0 -R"
-    
-}
-removerservicesh23(){
-update-rc.d bds defaults-disabled
-update-rc.d bds disable
-rm -rf /etc/init.d/bds
+    echo "Terminamos de configurar o samba e vsftpd"
+    echo "Para adicionar um usuario no Smb use smbpasswd -a username"
+    echo "Para usar o ftp não precisar de nada a mais para navegar pelas pasta basta ter um usuario no sistema"
 }
 
-if [[ -e /etc/bds-maneger/install.json ]];then
-json
-else
-echo "Por favor coloque um aquivo com o nome install.json na pasta /etc/bds-maneger ou se não, copia e renomeia o arquivo exemplo_install.jsonc"
-exit 127
-fi
+# As opções como comandos - end
+
 figlet Minecraft Bedrock
 echo "By Sh23"
-while [ true ]; do
+sleep 5
+while [ true ]
+do
+
+if [ $nogui = 'true' ]
+then
+
     echo "Seu endereço IPv4:                       $IP_V4"
     echo "Seu endereço IPv6:                       $IP_V6"
     echo "Seu IP Publico:                          $PUBLIC_IP"
+    echo "Pasta dos Arquivos:                      /etc/BDS-Common"
+    echo "Porta do Servido:                        $PORTAD"
+    echo "Dominio ou IP que será Utilizado:        $IPDOMAIN"
 read -rp "
--I : Iniciar o Servidor manualmente em uma sessão Screen
--S : Para o Servidor em sessão Screen
--u : Atualizar o Software do bds
--b : Ativar o Backup dos Software Por completo (Recomendado)
--s : Ativar a inicialização do bds junto com o Sistema Operacional
--a : Instalar o Apache Web Server para adicionar o minecraft ao abrir no navegador seu ip/dominio
--R : Remover a inicialização do servidor junto com o sistema operacional
--h : ajuda um pouco mais detalhada
--e : sair do menu
+1: Iniciar o Servidor manualmente
+2: Para o Servidor manualmente
+3: Adicionar um serviço para iniciar junto com o sistema
+4: Remover o serviço que iniciar o BDS junto com sistema
+5: Instalar o apache para ter uma pagina para adionar o servidor via navegador
+6: Instalar o servidor samba e ftp para acesso remoto
 
 
-Qual é Sua Opção: " -e -i "-" LE
+
+Qual é Sua Opção: " -e -i "" LE
+
+else
+LINESS="$(($(tput lines) - 5))"
+COLLS="$(($(tput cols) - 10))"
+
+LE="$(whiptail --title "Abrindo aplicativos" --cancel-button "Sair" --title "Minecraft Bedrock Server Maneger" \
+--backtitle "Pasta dos Arquivos: /etc/BDS-Common, Dominio/IP que será Utilizado: $IPDOMAIN" \
+--menu "Seu Endereço Publico: $PUBLIC_IP , Seu endereço Iv4: $IP_V4 , Seu endereço IPv6: $IP_V6" --fb $LINESS $COLLS 6 \
+"1" "Iniciar o Servidor manualmente" \
+"2" "Para o Servidor manualmente" \
+"3" "Adicionar um serviço para iniciar junto com o sistema" \
+"4" "Remover o serviço que iniciar o BDS junto com sistema" \
+"5" "Instalar o apache para ter uma pagina para adionar o servidor via navegador" \
+"6" "Instalar o servidor samba e ftp para acesso remoto"  3>&1 1>&2 2>&3)"
+
+fi
+
 #
-case $LE in
--I ) echo "Estamos Iniciando seu Servidor!";screen -L -Logfile /tmp/mcpe.txt -dmS bedrock bds ;;
--U ) echo "Estamos Parando seu Servidor";screen -S bedrock -p 0 -X stuff 'stop\n' ;;
--u ) echo "Por Favor Aguarde ...";apt update &> /dev/null && apt install bds-common -y &> /dev/null && echo "Pacote atualizado para a ultima versão" || echo "Não podemos atualizar os Software";;
--s ) sistemabysh23 ;;
--a ) apache2-installbysh23 ;;
--f ) externobysh23 ;;
--R ) removerservicesh23 ;;
--c ) crontabsh23 ;;
--e ) break;;
- * ) echo "Essa opção não existe";echo " "
-esac
-echo "--------------------------"
+    case $LE in
+    1) startserver;;
+    2) stopserver;;
+    3) addservice;;
+    4) removerservice;;
+    5) installapache;;
+    6) smbftp;;
+    *) break
+    esac
+    echo "OK"
+    sleep 10s
 done
+echo "--------------------------"
 # --------------- Codigo ------------------------------
 echo " "
 echo "qualquer erro no script me comunique no https://github.com/Sirherobrine23/Minecraft-Bedrock-auto-install/issues"

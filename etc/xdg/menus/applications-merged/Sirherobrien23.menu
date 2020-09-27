@@ -1,0 +1,12 @@
+<!DOCTYPE Menu PUBLIC "-//freedesktop//DTD Menu 1.0//EN"
+ "http://www.freedesktop.org/standards/menu-spec/1.0/menu.dtd">
+<Menu>
+  <Name>Applications</Name>
+  <Menu>
+    <Name>Sirherobrine23</Name>
+    <Directory>Sirherobrine23.directory</Directory>
+    <Include>
+        <Category>Sirherobrine23</Category>
+    </Include>
+  </Menu> <!-- End Sirherobrine23 -->
+</Menu>

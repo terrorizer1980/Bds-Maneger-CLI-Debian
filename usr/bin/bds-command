@@ -5,9 +5,11 @@ if [ "$EUID" -ne 0 ]; then
 fi
 while [ true ]
 do
+OLD="$(cat /tmp/mcpe.txt)"
 read -rp "
 Para Sair basta usar CTRL + C
 Qual é o Comando? " -e  COMMANDS
 screen -S bedrock -p 0 -X stuff "$COMMANDS\n"
-cat /tmp/mcpe.txt
+LS="$(cat "/tmp/mcpe.txt" | sed "s|$OLD||G" )"
+
 done

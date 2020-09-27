@@ -3,7 +3,7 @@ Name=Bds install system (Alpha)
 Icon=/usr/opt/bds-maneger/mcpe.ico
 Comment=Pequeno shutcurt do comando bds-install
 Type=Application
-Categories=Minecraft;bds-install;
-Exec=sudo export DESKTOP_SH23=0 bds
+Categories=Applications;Sirherobrine23
+Exec=sudo bds-maneger
 StartupNotify=false
 Terminal=true
