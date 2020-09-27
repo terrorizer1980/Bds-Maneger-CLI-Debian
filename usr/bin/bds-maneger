@@ -30,6 +30,7 @@ ROOTS="0"
 startserver(){
     if ! screen -list | grep -q "bedrock"; then
         echo "Estamos Iniciando seu Servidor!"
+        rm -rf /tmp/mcpe.txt
         screen -L -Logfile /tmp/mcpe.txt -dmS bedrock bds
     else
         echo "isso não pode acontecer pois já tem um servidor rodando em segundo plano"

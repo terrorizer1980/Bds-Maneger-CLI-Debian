@@ -14,6 +14,7 @@ if [[ "$EUID" -ne 0 ]]; then
 echo "Você não está executando o service com root ou sudo";exit 1
 fi
 startsh23(){
+rm -rf /tmp/mcpe.txt
 screen -L -Logfile /tmp/mcpe.txt -dmS bedrock bds
 }
 stopsh23(){
