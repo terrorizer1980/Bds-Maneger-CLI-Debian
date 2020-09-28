@@ -5,29 +5,30 @@ if [ "$EUID" -ne 0 ]; then
 fi
 while [ true ]
 do
+    DDs="0"
     LLS="$(cat /tmp/mcpe.txt | wc -l)"
     echo "Para Sair basta usar CTRL + C"
     read -rp "Qual é o Comando? " -e  COMMANDS
     screen -S bedrock -p 0 -X stuff "$COMMANDS\n"
 
     MOD="$(cat /tmp/mcpe.txt)"
-while true
-do
-    if [ "$(cat /tmp/mcpe.txt)" != "$MOD" ]; then
-    echo
-    break
-    else
-    DDs=$(($DDs + 1))
-    echo -ne "\rAguarde     $DDs Segundos"
-    sleep 0.2s
-    echo -ne "\rAguarde .   $DDs Segundos"
-    sleep 0.2s
-    echo -ne "\rAguarde ..  $DDs Segundos"
-    sleep 0.2s
-    echo -ne "\rAguarde ... $DDs Segundos"
-    fi
-    sleep 1s
-done
+    while true
+    do
+        if [ "$(cat /tmp/mcpe.txt)" != "$MOD" ]; then
+        echo
+        break
+        else
+        DDs=$(($DDs + 1))
+        echo -ne "\rAguarde     $DDs"
+        sleep 0.1s
+        echo -ne "\rAguarde .   $DDs"
+        sleep 0.1s
+        echo -ne "\rAguarde ..  $DDs"
+        sleep 0.1s
+        echo -ne "\rAguarde ... $DDs"
+        sleep 0.1s
+        fi
+    done
     LLS2="$(cat /tmp/mcpe.txt | wc -l)"
     echo "--------- LOG ----------"
     cat /tmp/mcpe.txt | tail -n $(($LLS2 - $LLS))

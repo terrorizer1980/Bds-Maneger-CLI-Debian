@@ -1,39 +1,36 @@
 #! /bin/bash
-if [ "$EUID" -ne $ROOTS ]; then
+if [ "$EUID" -ne 0 ]; then
 echo "Você não está executando o script com root ou sudo, por favor execute de novo o com: $0 $1"
 exit 13
 fi
+echo "Parando o Servidor"
 service bds stop
 cd /etc/BDS-Common/worlds/
 # Var
 MENU="Mapa"
 TITLE="Selecione um Mapa?"
 BACK=""
-TAMANHO="0 0 0"
+
+LINESS="$(($(tput lines) - 5))"
+COLLS=""
+TAMANHO="$(($(tput lines) - 5)) $(($(tput cols) - 10)) 7"
 # Var
 
 # Init
-if [ -e /etc/bds-maneger/bds-swith ]
-then
- for cOs in $(ls)
- do
-   cp /usr/opt/bds-maneger/server.properties ${Cos}/server.properties
-   sed -i "s|level-name=New_World|level-name=$(echo ${Cos} | sed 's|/||g')|g" ${Cos}/server.properties
- done
- echo "done" > /etc/bds-maneger/bds-swith
-else
- echo "Nãp precissamos lista os mapas e configurar continuando ..."
-fi
+echo "Listando os mapas"
+for cOs in *
+do
+  echo
+  echo "$cOs"
+  cat /usr/opt/bds-maneger/server.properties | sed "s|server-name=Sirherobrine23-AutoScript|server-name=${cOs}|g" | sed "s|level-name=New_World|level-name=${cOs}|g" > "${cOs}/server.properties"
+done
 
 shopt -s nullglob
 arr=(*)
 for ((i=0; i<${#arr[@]}; i++)); do j=$((2*$i+2)); a[j]="${arr[$i]}"; a[j+1]=""; done
 # Next line has extra spaces at right to try to center it:
 MPA=$(whiptail --ok-button "OK" --cancel-button "Cancelar" --title "$TITLE" --backtitle "$BACK" --menu "$MENU" $TAMANHO "${a[@]}" 2>&1 >/dev/tty)
-if [[ $? = 0 ]]
-then
-# ge 5 in next line should be length of file extension including . character, plus 1
-  [ ${#MPA} -ge 5 ] && outfile="$MPA" || echo "Selection not made"
-fi
 echo "O mapa Selecionado foi: $MPA , alterando configurações do servidor e o Mapa ..."
-cat "$MPA" > /etc/BDS-Common/server.properties
+cat "$MPA/server.properties" > /etc/BDS-Common/server.properties
+echo "Estamos iniciando o servidor novamente!!!, aguarde ..."
+service bds start

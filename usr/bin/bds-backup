@@ -1,27 +1,33 @@
 #!/bin/bash
 BC1=$(cat /etc/bds-maneger/install.json | jq ".gdrive.stage" | sed 's|"||g')
 case $BC1 in
-off) echo "Não Havera backup";exit;;
-OFF) echo "Não Havera backup";exit;;
-'') echo "Nenhuma informação foi Fornecida, Não Havera backup";exit
+    off) echo "Não Havera backup";exit;;
+    OFF) echo "Não Havera backup";exit;;
+    '') echo "Nenhuma informação foi Fornecida, Não Havera backup";exit
+    null) echo "Nenhuma informação foi Fornecida, Não Havera backup";exit
 esac
 echo "Iniciando o backup"
-# Separando
-PATH_TO_INSTALL="/etc/BDS-Common/worlds"
-ID="$(cat /etc/bds-maneger/install.json | jq ".gdrive.ID" | sed 's|"||g')"
-BACKUP="$(cat /etc/bds-maneger/install.json | jq ".global.backup_folder" | sed 's|"||g')"
-# Separando
-DATE=$(TZ=UTC+3 date +"%d-%m-%Y_%H-%M-%S")
-GDRIVEDATE="$(TZ=UTC+3 date +"%d/%m/%Y-%H-%M-%S")"
-TM="/tmp"
-echo "Pegando a ID da nova pasta"
-GDRIVE_FOLDE=$(gdrive mkdir $GDRIVEDATE -p $ID | sed 's| created||g' | sed 's|Directory ||g')
-echo "ok"
-cd "$PATH_TO_INSTALL"
-echo "Nome do Backup: $DATE"
-echo "Nome da subpasta: $GDRIVEDATE"
-echo "Id da subpasta: $GDRIVE_FOLDE"
-zip "$DATE.zip" -r *
-cp "$DATE.zip" "$BACKUP"
-gdrive upload "$DATE.zip" --parent "$GDRIVE_FOLDE"
-rm "$DATE.zip"
+# VAR
+    PATH_TO_INSTALL="/etc/BDS-Common/worlds"
+    ID="$(cat /etc/bds-maneger/install.json | jq ".gdrive.ID" | sed 's|"||g')"
+    BACKUP="$(cat /etc/bds-maneger/install.json | jq ".global.backup_folder" | sed 's|"||g')"
+# Datas
+    DATE=$(TZ=UTC+3 date +"%d-%m-%Y_%H-%M-%S")
+    GDRIVEDATE="$(TZ=UTC+3 date +"%d/%m/%Y-%H-%M-%S")"
+    TM="/tmp"
+# ID
+    echo "Pegando a ID da nova pasta"
+    GDRIVE_FOLDE=$(gdrive mkdir $GDRIVEDATE -p $ID | sed 's| created||g' | sed 's|Directory ||g')
+# Confirmando    
+    echo "ok"
+    cd "$PATH_TO_INSTALL"
+    echo "Nome do Backup: $DATE"
+    echo "Nome da subpasta: $GDRIVEDATE"
+    echo "Id da subpasta: $GDRIVE_FOLDE"
+# Compactando arquivo zip Temporario e fazendo backup Local
+    zip "$DATE.zip" -r *
+    cp "$DATE.zip" "$BACKUP"
+# Subindo para o Google Drive
+    gdrive upload "$DATE.zip" --parent "$GDRIVE_FOLDE"
+# Removendo arquivo zip temporario
+    rm "$DATE.zip"

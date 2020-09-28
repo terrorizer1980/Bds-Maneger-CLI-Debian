@@ -112,11 +112,58 @@ smbftp(){
     echo "Para usar o ftp não precisar de nada a mais para navegar pelas pasta basta ter um usuario no sistema"
 }
 
+
+oldtonew(){
+    echo "Vamos começar!!!"
+    read -rp "A onde está a instalação da versão antiga? " -e -i "/home/minecraft" oldtonewpath
+    if [ -d $oldtonewpath ]
+    then
+        echo "Fazendo Backup!!!"
+        zip -rqq /etc/BDS-Common/OLDEST_bysh23-$(TZ=UTC+3 date +"%d-%m-%Y_%H-%M-%S").zip -r $oldtonewpath
+        echo "Copiando os mapas"
+         cp -rf $oldtonewpath/worlds/./ /etc/BDS-Common/worlds
+        echo "Copiando as Configurações, whitelist e permissions."
+         cp -rf $oldtonewpath/whitelist.json /etc/BDS-Common/
+         cp -rf $oldtonewpath/permissions.json /etc/BDS-Common/
+         cp -rf $oldtonewpath/server.properties /etc/BDS-Common/
+        LINESSs="$(($(tput lines) - 5))"
+        COLLSs="$(($(tput cols) - 10))"
+        CONFIRMOLDTONEW="$(whiptail --cancel-button "Sair" --title "" \
+        --menu "" --fb $LINESSs $COLLSs 2 \
+        "1" "Não Apagar" \
+        "2" "Apagar" 3>&1 1>&2 2>&3)"
+        case $CONFIRMOLDTONEW in
+            2) rm -rf $oldtonewpath ;;
+            1) echo não vamos remover;;
+        esac
+        echo "Terminamos"
+    else
+        echo "O diretorio não existe"
+        exit 23
+    fi
+}
 # As opções como comandos - end
 
 figlet Minecraft Bedrock
 echo "By Sh23"
-sleep 5
+
+for asss in {0..10}
+do
+    if [ $asss = 10 ]
+    then
+        break
+    else
+        echo -ne "\respere um pouco    "
+        sleep 0.1s
+        echo -ne "\respere um pouco .  "
+        sleep 0.1s
+        echo -ne "\respere um pouco .. "
+        sleep 0.1s
+        echo -ne "\respere um pouco ..."
+        sleep 0.1s
+    fi
+done
+
 while [ true ]
 do
 
@@ -136,6 +183,7 @@ read -rp "
 4: Remover o serviço que iniciar o BDS junto com sistema
 5: Instalar o apache para ter uma pagina para adionar o servidor via navegador
 6: Instalar o servidor samba e ftp para acesso remoto
+7: Atualizando antigas versões para a nova (Isso caso voçê tenha usado os pacotes bds e bds-install)
 
 
 
@@ -145,15 +193,16 @@ else
 LINESS="$(($(tput lines) - 5))"
 COLLS="$(($(tput cols) - 10))"
 
-LE="$(whiptail --title "Abrindo aplicativos" --cancel-button "Sair" --title "Minecraft Bedrock Server Maneger" \
+LE="$(whiptail --cancel-button "Sair" --title "Minecraft Bedrock Server Maneger" \
 --backtitle "Pasta dos Arquivos: /etc/BDS-Common, Dominio/IP que será Utilizado: $IPDOMAIN" \
---menu "Seu Endereço Publico: $PUBLIC_IP , Seu endereço Iv4: $IP_V4 , Seu endereço IPv6: $IP_V6" --fb $LINESS $COLLS 6 \
+--menu "Seu Endereço Publico: $PUBLIC_IP , Seu endereço Iv4: $IP_V4 , Seu endereço IPv6: $IP_V6" --fb $LINESS $COLLS 10 \
 "1" "Iniciar o Servidor manualmente" \
 "2" "Para o Servidor manualmente" \
 "3" "Adicionar um serviço para iniciar junto com o sistema" \
 "4" "Remover o serviço que iniciar o BDS junto com sistema" \
 "5" "Instalar o apache para ter uma pagina para adionar o servidor via navegador" \
-"6" "Instalar o servidor samba e ftp para acesso remoto"  3>&1 1>&2 2>&3)"
+"6" "Instalar o servidor samba e ftp para acesso remoto" \
+"7" "Atualizando antigas versões para a nova, Isso caso voçê tenha usado os pacotes bds e bds-install" 3>&1 1>&2 2>&3)"
 
 fi
 
@@ -165,7 +214,8 @@ fi
     4) removerservice;;
     5) installapache;;
     6) smbftp;;
-    *) break
+    7) oldtonew;;
+    *) echo "saindo ...";break
     esac
     echo "OK"
     sleep 10s
