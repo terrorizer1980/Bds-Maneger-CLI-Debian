@@ -21,16 +21,20 @@ stopsh23(){
     screen -S bedrock -p 0 -X stuff 'say server in stop en 10 Sec\n'
     sleep 5
     screen -S bedrock -p 0 -X stuff 'say server in stop en 5 Sec\n'
-    sleep 1
+    sleep 5
     screen -S bedrock -p 0 -X stuff 'say server is stopping\n'
+    sleep 1s
 	screen -S bedrock -p 0 -X stuff 'stop\n'
+    DDsD=0
     while [ true ]
     do 
         if ! screen -list | grep -q "bedrock"; then
+            echo
             bds-backup
             break
         else
-            echo "Servidor ainda está executando, não fazeremos backup ainda"
+            DDsD=$(($DDsD + 1))
+            echo -ne "\rServidor ainda está executando - não fazeremos backup ainda $DDsD"
         fi
     done
 }

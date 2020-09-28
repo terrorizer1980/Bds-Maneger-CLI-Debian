@@ -15,16 +15,20 @@ LINESS="$(($(tput lines) - 5))"
 COLLS=""
 TAMANHO="$(($(tput lines) - 5)) $(($(tput cols) - 10)) 7"
 # Var
-
+echo
 # Init
 echo "Listando os mapas"
 for cOs in *
 do
-  echo
-  echo "$cOs"
-  cat /usr/opt/bds-maneger/server.properties | sed "s|server-name=Sirherobrine23-AutoScript|server-name=${cOs}|g" | sed "s|level-name=New_World|level-name=${cOs}|g" > "${cOs}/server.properties"
+  if [ -e $cOs/server.properties ]
+  then
+      echo "$cOs já tem um server.properties"
+  else
+    echo "Criando uma configuração para: $cOs"
+    cat /usr/opt/bds-maneger/server.properties | sed "s|server-name=Sirherobrine23-AutoScript|server-name=${cOs}|g" | sed "s|level-name=New_World|level-name=${cOs}|g" > $cOs/server.properties
+  fi
 done
-
+echo
 shopt -s nullglob
 arr=(*)
 for ((i=0; i<${#arr[@]}; i++)); do j=$((2*$i+2)); a[j]="${arr[$i]}"; a[j+1]=""; done

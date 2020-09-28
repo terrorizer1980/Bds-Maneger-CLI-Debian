@@ -3,7 +3,7 @@ BC1=$(cat /etc/bds-maneger/install.json | jq ".gdrive.stage" | sed 's|"||g')
 case $BC1 in
     off) echo "Não Havera backup";exit;;
     OFF) echo "Não Havera backup";exit;;
-    '') echo "Nenhuma informação foi Fornecida, Não Havera backup";exit
+    '') echo "Nenhuma informação foi Fornecida, Não Havera backup";exit;;
     null) echo "Nenhuma informação foi Fornecida, Não Havera backup";exit
 esac
 echo "Iniciando o backup"
