@@ -1,0 +1,53 @@
+#!/bin/bash
+echo "Não funcional"
+exit 13
+# process id to monitor
+pid=$(/bin/ps -fu $USER|grep "bedrock_server"|awk '{print $2}' | head -1)
+
+if [ -z $pid ]; then
+  echo "ERROR: Process ID not specified."
+  echo
+  echo "Usage: $(basename "$0") <PID>"
+  exit 1
+fi
+
+# check if process exists
+kill -0 $pid > /dev/null 2>&1
+pid_exist=$?
+
+if [ $pid_exist != 0 ]; then
+  echo "ERROR: Process ID $pid not found."
+  exit 1
+fi
+
+current_time=$(date +"%Y_%m_%d_%H%M")
+
+
+# Read collected metrices from the CSV file and plot graphs
+#
+# This function will end script execution.
+#
+# This function is to be called after an interrupt like SIGINT or SIGKILL
+# is received.
+#
+
+# check if process exists
+kill -0 $pid > /dev/null 2>&1
+pid_exist=$?
+
+# collect until process exits
+while [ $pid_exist == 0 ]; do
+  # check if process exists
+  kill -0 $pid > /dev/null 2>&1
+  pid_exist=$?
+
+  if [ $pid_exist == 0 ]; then
+    # read cpu and mem percentages
+    timestamp=$(date +"%b %d %H:%M:%S")
+    cpu_mem_usage=$(top -b -n 1 -p $pid %Cpu | grep -w -E "^ *$pid" | awk '{print $9 "," $pid0}' | sed "s|$pid||g" | sed 's|root||g' | sed 's|bedrock_server||g' | tr 'n' , | sed s/,$//)
+    tcount=$(ps -o nlwp h $pid | tr -d ' ')
+
+    # write CSV row
+    echo -ne "\r $cpu_mem_usage"
+  fi
+done

@@ -6,35 +6,71 @@ fi
 echo "Parando o Servidor"
 service bds stop
 cd /etc/BDS-Common/worlds/
-# Var
-MENU="Mapa"
-TITLE="Selecione um Mapa?"
-BACK=""
-
-LINESS="$(($(tput lines) - 5))"
-COLLS=""
-TAMANHO="$(($(tput lines) - 5)) $(($(tput cols) - 10)) 7"
-# Var
-echo
+echo "---------------------"
 # Init
 echo "Listando os mapas"
 for cOs in *
 do
-  if [ -e $cOs/server.properties ]
+  if [ -d "${cOs}" ]
   then
-      echo "$cOs já tem um server.properties"
+    if [ -e "$cOs/server.properties" ]
+    then
+        echo "$cOs já tem um server.properties"
+    else
+      echo "Criando uma configuração para: $cOs"
+      cat /usr/opt/bds-maneger/server.properties | sed "s|server-name=Sirherobrine23-AutoScript|server-name=${cOs}|g" | sed "s|level-name=New_World|level-name=${cOs}|g" > "$cOs/server.properties"
+    fi
+
+    if [ -e /etc/BDS-Common/permissions.json ]
+    then
+      if [ -e "$cOs/permissions.json" ]
+      then
+          echo "$cOs já tem um permissions.json"
+      else
+        echo "Copiando o permissions.json para: $cOs"
+        cat /etc/BDS-Common/permissions.json > "$cOs/permissions.json"
+      fi
+    else
+      echo "Não Temos Um arquivo permissions.json no diretorio do servidor"
+    fi
+
+    if [ -e /etc/BDS-Common/whitelist.json ]
+    then
+      if [ -e "$cOs/whitelist.json" ]
+      then
+          echo "$cOs já tem um whitelist.json"
+      else
+        echo "Copiando a whitelist para: $cOs"
+        cat /etc/BDS-Common/whitelist.json > "$cOs/whitelist.json"
+      fi
+    else
+      echo "Nao temos um arquivo whitelist.json no diretorio do servidor"
+    fi
+
+
   else
-    echo "Criando uma configuração para: $cOs"
-    cat /usr/opt/bds-maneger/server.properties | sed "s|server-name=Sirherobrine23-AutoScript|server-name=${cOs}|g" | sed "s|level-name=New_World|level-name=${cOs}|g" > $cOs/server.properties
+    echo "Não Podemos criar um server.properties para o arquivo ${cOs}"
   fi
 done
-echo
-shopt -s nullglob
-arr=(*)
-for ((i=0; i<${#arr[@]}; i++)); do j=$((2*$i+2)); a[j]="${arr[$i]}"; a[j+1]=""; done
-# Next line has extra spaces at right to try to center it:
-MPA=$(whiptail --ok-button "OK" --cancel-button "Cancelar" --title "$TITLE" --backtitle "$BACK" --menu "$MENU" $TAMANHO "${a[@]}" 2>&1 >/dev/tty)
-echo "O mapa Selecionado foi: $MPA , alterando configurações do servidor e o Mapa ..."
-cat "$MPA/server.properties" > /etc/BDS-Common/server.properties
-echo "Estamos iniciando o servidor novamente!!!, aguarde ..."
+echo "---------------------"
+echo "Por Favor selecione um Mapa (Só o Número)"
+select MPA in exit */
+do 
+ test -n "$MPA" && break
+ echo ">>> Por Favor selecione o mapa e coloque seu nomero"
+done
+
+if [ -z "$MPA" ]
+then
+  echo "Não foi selecionado nenhum mapa. Continuando com a Versão Antiga"
+else
+  if [ "$MPA" == 'exit' ]
+  then
+    echo "Saindo e mantendo o mapa antigo"
+  else
+    echo "O mapa Selecionado foi: $MPA , alterando configurações do servidor e o Mapa ..."
+    cat "$MPA/server.properties" > /etc/BDS-Common/server.properties
+    echo "Estamos iniciando o servidor novamente!!!, aguarde ..."
+   fi
+fi
 service bds start
