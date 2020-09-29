@@ -1,0 +1,34 @@
+#!/bin/bash
+set -x
+# read -rp "Vai quere montar um arquivo install.json agora" -e -i "sim" CONFIRM
+CONFIG(){
+    
+    read -rp "" -e -i "sim" CONFIRM
+    
+    
+    read -rp "Vai quere montar um arquivo install.json agora" -e -i "sim" CONFIRM
+    read -rp "Vai quere montar um arquivo install.json agora" -e -i "sim" CONFIRM
+
+    echo "{
+    "global":{
+        "port": "19132",
+        "backup_folder": "/etc/BDS-Common/Backup"
+    },
+    "gdrive":{
+        "ID": "$ID",
+        "stage": "$STAGEONOFF"
+    },
+    "pages":{
+        "domain": "$DOMAINSELECTS"
+    }
+}"
+}
+
+# case $CONFIRM in
+
+
+# esac
+
+echo "Ainda estamos montando uma pré-configuração"
+
+exit 0

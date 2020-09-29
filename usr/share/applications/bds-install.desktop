@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=Bds install system (Alpha)
+Name=Minecraft Bedrock Server Maneger
 Icon=/usr/opt/bds-maneger/mcpe.ico
-Comment=Pequeno shutcurt do comando bds-install
+Comment=Pequeno shutcurt do comando bds-maneger
 Type=Application
 Categories=Applications;Sirherobrine23
 Exec=sudo bds-maneger
