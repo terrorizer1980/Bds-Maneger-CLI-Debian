@@ -1,3 +1,8 @@
+# 01/10/2020 - Version 1.4.7
+
+o bds-status agorá mostrara o uso do bds por completo mais ainda muito simples
+
+----
 # 01/10/2020 - Version 1.4.6
 
 Agora o bds-status mostra uma pequena estatica de utlização do bds no total no sistema mais ainda não totalmente funcional

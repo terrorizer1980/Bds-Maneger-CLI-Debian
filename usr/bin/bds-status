@@ -1,16 +1,8 @@
 #!/bin/bash
-pid=$(/bin/ps -fu $USER|grep -v 'grep'|grep "bedrock_server"|awk '{print $2}' | head -1)
+pid=$(ps -fu $USER|grep -v 'grep'|grep "bedrock_server"|awk '{print $2}' | head -1)
 if [ -z $pid ]; then
   echo "ERROR: Process ID not specified."
-  echo
-  echo "Usage: $(basename "$0") <PID>"
-  exit 1
-fi
-kill -0 $pid > /dev/null 2>&1
-pid_exist=$?
-if [ $pid_exist != 0 ]; then
-  echo "ERROR: Process ID $pid not found."
-  exit 1
+  exit 13
 fi
 kill -0 $pid > /dev/null 2>&1
 pid_exist=$?
@@ -19,11 +11,9 @@ while [ $pid_exist == 0 ]; do
   pid_exist=$?
   if [ $pid_exist == 0 ]; then
     cpu_mem_usage=$(top -b -n 1 -p $pid | grep -w -E "^ *$pid" | awk '{print $9 "," $pid0}' | sed "s|$pid||g" | sed 's|root||g' | sed 's|bedrock_server||g' | tr 'n' , | sed s/,$//)
-
-    ME="$(free -m | awk 'NR==2{printf "%s/%sMB (%.2f%%)\n", $3,$2,$3*100/$2 }')"
-
-
+    ME="$(ps -o rss= $pid | awk '{printf "%.0f\n", $1 / 1024}')"
+    ME2="$(ps -o vsz= $pid | awk '{printf "%.0f\n", $1 / 1024}')"
     latestscpu="$(echo $cpu_mem_usage | awk '{print substr($0, 1, 5)}'|sed 's| ||g')"
-    echo -ne "\rUtilização de CPU e memoria: CPU $latestscpu Memoria $ME  "
+    echo -ne "\rUtilizações: CPU $latestscpu )-( Memoria $ME MB )-( Memoria Virtual $ME2 MB  "
   fi
 done
