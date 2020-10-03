@@ -3,34 +3,48 @@ if [ "$EUID" -ne 0 ]; then
     echo "Você não está executando o script com root ou sudo, por favor execute de novo o com: $0 $1"
     exit 13
 fi
-while [ true ]
-do
+
+command-send(){
+    suss='a'
     DDs="0"
     LLS="$(cat /tmp/mcpe.txt | wc -l)"
-    echo "Para Sair basta usar CTRL + C"
-    read -rp "Qual é o Comando? " -e  COMMANDS
-    screen -S bedrock -p 0 -X stuff "$COMMANDS\n"
+    screen -S bedrock -p 0 -X stuff "$COMMANDS\n" && suss=0
 
-    MOD="$(cat /tmp/mcpe.txt)"
-    while true
+    if [ $suss = '0' ];then
+        MOD="$(cat /tmp/mcpe.txt)"
+        while true
+        do
+            if [ "$(cat /tmp/mcpe.txt)" != "$MOD" ]; then
+            echo
+            break
+            else
+            DDs=$(($DDs + 1))
+            echo -ne "\rAguarde     $DDs"
+            sleep 0.1s
+            echo -ne "\rAguarde .   $DDs"
+            sleep 0.1s
+            echo -ne "\rAguarde ..  $DDs"
+            sleep 0.1s
+            echo -ne "\rAguarde ... $DDs"
+            sleep 0.1s
+            fi
+        done
+        LLS2="$(cat /tmp/mcpe.txt | wc -l)"
+        echo "--------- LOG ----------"
+        cat /tmp/mcpe.txt | tail -n $(($LLS2 - $LLS))
+        echo "--------- LOG ----------"
+        COMMANDS=''
+    fi
+}
+if [ "$GUI" = 'true' ]
+then
+    COMMANDS="$1"
+    command-send
+else
+    while [ true ]
     do
-        if [ "$(cat /tmp/mcpe.txt)" != "$MOD" ]; then
-        echo
-        break
-        else
-        DDs=$(($DDs + 1))
-        echo -ne "\rAguarde     $DDs"
-        sleep 0.1s
-        echo -ne "\rAguarde .   $DDs"
-        sleep 0.1s
-        echo -ne "\rAguarde ..  $DDs"
-        sleep 0.1s
-        echo -ne "\rAguarde ... $DDs"
-        sleep 0.1s
-        fi
+        echo "Para Sair basta usar CTRL + C"
+        read -rp "Qual é o Comando? " -e  COMMANDS
+        command-send
     done
-    LLS2="$(cat /tmp/mcpe.txt | wc -l)"
-    echo "--------- LOG ----------"
-    cat /tmp/mcpe.txt | tail -n $(($LLS2 - $LLS))
-    echo "--------- LOG ----------"
-done
+fi

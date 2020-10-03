@@ -1,4 +1,5 @@
 #!/bin/bash
+[ -e /tmp/bds-keep ] && echo "Foi Detectado bds-keep";exit
 BC1=$(cat /etc/bds-maneger/install.json | jq ".gdrive.stage" | sed 's|"||g')
 case $BC1 in
     off) echo "Não Havera backup";exit;;
@@ -9,15 +10,15 @@ esac
 echo "Iniciando o backup"
 # VAR
     PATH_TO_INSTALL="/etc/BDS-Common/worlds"
-    ID="$(cat /etc/bds-maneger/install.json | jq ".gdrive.ID" | sed 's|"||g')"
+    ROOTID="$(cat /etc/bds-maneger/install.json | jq ".gdrive.ID" | sed 's|"||g')"
     BACKUP="$(cat /etc/bds-maneger/install.json | jq ".global.backup_folder" | sed 's|"||g')"
 # Datas
     DATE=$(TZ=UTC+3 date +"%d-%m-%Y_%H-%M-%S")
     GDRIVEDATE="$(TZ=UTC+3 date +"%d/%m/%Y-%H-%M-%S")"
     TM="/tmp"
-# ID
+# ROOTID
     echo "Pegando a ID da nova pasta"
-    GDRIVE_FOLDE=$(gdrive mkdir $GDRIVEDATE -p $ID | sed 's| created||g' | sed 's|Directory ||g')
+    GDRIVE_FOLDE=$(gdrive mkdir $GDRIVEDATE -p $ROOTID | sed 's| created||g' | sed 's|Directory ||g')
 # Confirmando    
     echo "ok"
     cd "$PATH_TO_INSTALL"

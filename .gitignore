@@ -11,3 +11,5 @@ pasta.txt
 IDs.txt
 *.deb
 tmp/*
+node_modules/
+dist/
