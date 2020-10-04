@@ -7,6 +7,7 @@ case $BC1 in
     '') echo "Nenhuma informação foi Fornecida, Não Havera backup";exit;;
     null) echo "Nenhuma informação foi Fornecida, Não Havera backup";exit
 esac
+service bds stop
 echo "Iniciando o backup"
 # VAR
     PATH_TO_INSTALL="/etc/BDS-Common/worlds"
