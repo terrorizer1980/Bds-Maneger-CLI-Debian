@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - Main_Code
+    paths:
+      - 'control'
 
 env:
   GIT: 'true'
