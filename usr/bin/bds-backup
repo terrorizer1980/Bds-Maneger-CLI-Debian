@@ -1,5 +1,4 @@
 #!/bin/bash
-[ -e /tmp/bds-keep ] && echo "Foi Detectado bds-keep";exit
 BC1=$(cat /etc/bds-maneger/install.json | jq ".gdrive.stage" | sed 's|"||g')
 case $BC1 in
     off) echo "Não Havera backup";exit;;
@@ -7,6 +6,7 @@ case $BC1 in
     '') echo "Nenhuma informação foi Fornecida, Não Havera backup";exit;;
     null) echo "Nenhuma informação foi Fornecida, Não Havera backup";exit
 esac
+[ -e /tmp/bds-keep ] && echo "Foi Detectado bds-keep";exit
 service bds stop
 echo "Iniciando o backup"
 # VAR

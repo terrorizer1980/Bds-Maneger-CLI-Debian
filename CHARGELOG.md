@@ -1,3 +1,7 @@
+# 03/10/2020 - Version 1.4.10
+
+Erro no backup
+----
 # 03/10/2020 - Version 1.4.8
 
 Um pequena motificação nada de mais
