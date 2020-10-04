@@ -27,7 +27,7 @@ echo "Iniciando o backup"
     echo "Nome da subpasta: $GDRIVEDATE"
     echo "Id da subpasta: $GDRIVE_FOLDE"
 # Compactando arquivo zip Temporario e fazendo backup Local
-    zip "$DATE.zip" -r *
+    zip --quiet "$DATE.zip" -r *
     cp "$DATE.zip" "$BACKUP"
 # Subindo para o Google Drive
     gdrive upload "$DATE.zip" --parent "$GDRIVE_FOLDE"
