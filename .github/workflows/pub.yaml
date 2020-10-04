@@ -4,7 +4,7 @@ on:
     branches:
       - Main_Code
     paths:
-      - 'control'
+      - 'DEBIAN/control'
 
 env:
   GIT: 'true'
