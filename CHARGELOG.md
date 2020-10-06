@@ -1,3 +1,7 @@
+# 03/10/2020 - Version 1.4.11
+
+Algumas Modificações foram adicionads para o bds-maneger-gui
+----
 # 03/10/2020 - Version 1.4.10
 
 Erro no backup

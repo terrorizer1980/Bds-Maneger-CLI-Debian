@@ -6,14 +6,10 @@ if [ -z $pid ]; then
 fi
 kill -0 $pid > /dev/null 2>&1
 pid_exist=$?
-while [ $pid_exist == 0 ]; do
-  kill -0 $pid > /dev/null 2>&1
-  pid_exist=$?
-  if [ $pid_exist == 0 ]; then
-    cpu_mem_usage=$(top -b -n 1 -p $pid | grep -w -E "^ *$pid" | awk '{print $9 "," $pid0}' | sed "s|$pid||g" | sed 's|root||g' | sed 's|bedrock_server||g' | tr 'n' , | sed s/,$//)
-    ME="$(ps -o rss= $pid | awk '{printf "%.0f\n", $1 / 1024}')"
-    ME2="$(ps -o vsz= $pid | awk '{printf "%.0f\n", $1 / 1024}')"
-    latestscpu="$(echo $cpu_mem_usage | awk '{print substr($0, 1, 5)}'|sed 's| ||g')"
-    echo -ne "\rUtilizações: CPU $latestscpu )-( Memoria $ME MB )-( Memoria Virtual $ME2 MB  "
-  fi
+if [ $pid_exist == 0 ]; then
+  cpu_mem_usage=$(top -b -n 1 -p $pid | grep -w -E "^ *$pid" | awk '{print $9 "," $pid0}' | sed "s|$pid||g" | sed 's|root||g' | sed 's|bedrock_server||g' | tr 'n' , | sed s/,$//)
+  ME="$(ps -o rss= $pid | awk '{printf "%.0f\n", $1 / 1024}')"
+  ME2="$(ps -o vsz= $pid | awk '{printf "%.0f\n", $1 / 1024}')"
+  latestscpu="$(echo $cpu_mem_usage | awk '{print substr($0, 1, 5)}'|sed 's| ||g')"
+  echo -ne "\rUtilizações: CPU $latestscpu )-( Memoria $ME MB )-( Memoria Virtual $ME2 MB  "
 done

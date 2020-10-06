@@ -15,18 +15,9 @@ command-send(){
         while true
         do
             if [ "$(cat /tmp/mcpe.txt)" != "$MOD" ]; then
-            echo
             break
             else
-            DDs=$(($DDs + 1))
-            echo -ne "\rAguarde     $DDs"
-            sleep 0.1s
-            echo -ne "\rAguarde .   $DDs"
-            sleep 0.1s
-            echo -ne "\rAguarde ..  $DDs"
-            sleep 0.1s
-            echo -ne "\rAguarde ... $DDs"
-            sleep 0.1s
+            echo -ne "\rAguarde"
             fi
         done
         LLS2="$(cat /tmp/mcpe.txt | wc -l)"
@@ -38,7 +29,7 @@ command-send(){
 }
 if [ "$GUI" = 'true' ]
 then
-    COMMANDS="$1"
+    COMMANDS="$1 $2 $3 $4 $5 $6 $7 $8"
     command-send
 else
     while [ true ]
