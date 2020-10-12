@@ -18,7 +18,7 @@ do
         echo "$cOs já tem um server.properties"
     else
       echo "Criando uma configuração para: $cOs"
-      cat /usr/opt/bds-maneger/server.properties | sed "s|server-name=Sirherobrine23-AutoScript|server-name=${cOs}|g" | sed "s|level-name=New_World|level-name=${cOs}|g" > "$cOs/server.properties"
+      cat /opt/bds-maneger/server.properties | sed "s|server-name=Sirherobrine23-AutoScript|server-name=${cOs}|g" | sed "s|level-name=New_World|level-name=${cOs}|g" > "$cOs/server.properties"
     fi
 
     if [ -e /etc/BDS-Common/permissions.json ]

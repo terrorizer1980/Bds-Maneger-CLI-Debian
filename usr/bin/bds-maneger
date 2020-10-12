@@ -50,7 +50,7 @@ stopserver(){
 
 addservice(){
     echo "Iniciando as Configurações do arquivo para Inicialização junto com o Sistema"
-    cp /usr/opt/bds-maneger/start-on-system.sh /etc/init.d/bds
+    cp /opt/bds-maneger/start-on-system.sh /etc/init.d/bds
     chmod a+x /etc/init.d/bds;
     update-rc.d bds defaults
     update-rc.d bds enable
@@ -75,17 +75,19 @@ installapache(){
        apt install apache2 -y >> /dev/null 2>&1 
 
       # Removendo pasta HTML e Adicionando denovo
+      echo "Estamos removendo a pasta html qualquer coisa nela será apagado"
       rm -rf /var/www/html/
       mkdir /var/www/html/
 
+      # Copiando os arquivos
+      cp -rf /opt/bds-maneger/html-files/* /var/www/html/
+
       # Pegando as config
       echo "Agora vamos começar a configurar o nova pagina do Apache"
+      
       # Montando as Configurações
-      sed -i "s|ENDEREÇODOSERVIDOROUIP|$IPDOMAIN|g" "/usr/opt/bds-maneger/html-files/index.html"
-      sed -i "s|PORTASERVER|$PORTAD|g" "/usr/opt/bds-maneger/html-files/index.html"
-
-      # Movendo as configurações
-      cp -rf /usr/opt/bds-maneger/html-files/* /var/www/html/
+      sed -i "s|ENDEREÇODOSERVIDOROUIP|$IPDOMAIN|g" "/var/www/html/index.html"
+      sed -i "s|PORTASERVER|$PORTAD|g" "/var/www/html/index.html"
 }
 
 smbftp(){
@@ -99,8 +101,8 @@ smbftp(){
 
     echo "Terminado as configurações"
       rm /etc/samba/smb.conf
-      cp -rf /usr/opt/bds-maneger/smb.conf /etc/samba/
-      cp -rf /usr/opt/bds-maneger/vsftp.conf /etc/vsftpd.conf
+      cp -rf /opt/bds-maneger/smb.conf /etc/samba/
+      cp -rf /opt/bds-maneger/vsftp.conf /etc/vsftpd.conf
 
     echo "Reiniciando o serviço do Samba"
       service smbd restart

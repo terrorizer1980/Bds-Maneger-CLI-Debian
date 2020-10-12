@@ -1,0 +1,113 @@
+#!/bin/bash
+if [ "$EUID" -ne 0 ]; then
+    echo "Você não está com root ou sudo, por favor execute de novo o com: $0 $1 $2 $3 $4"
+    exit 23
+fi
+
+PASTA="$(cat /opt/BDS-Common/server.properties | grep 'level-name=' | sed 's|level-name=||g')"
+WORDC="/etc/BDS-Common/worlds/$PASTA/server.properties"
+echo "Parando o Servidor"
+service bds stop
+if [ $1 == 'set' ]
+then
+    if [ -z "$2" ]
+    then
+        echo "Uma Opção tem que ter na segundo opção"
+    else
+        online-mode(){
+            NEW="$(echo $NEW | sed 's|xbox=||g')"
+            OLD=$(cat "$WORDC" | grep online-mode= )
+            echo $NEW
+            case $NEW in
+                true) sed -i -e "$WORDC" "s|$OLD|online-mode=true|g";;
+                false) cat "$WORDC"| sed "s|$OLD|online-mode=false|g";;
+                *) echo "Formato Errado";echo "erro 23";exit 23;;
+            esac
+        }
+
+        max-players(){
+            NEW="$(echo $NEW | sed 's|player=||g')"
+            OLD=$(cat "$WORDC" | grep max-players= )
+            echo $NEW        
+                if [ "$NEW" == '0' ]
+                then
+                echo "Not permited 0"
+                else
+                sed -i -e "s|$OLD|max-players=$NEW|g" "$WORDC"
+                fi
+        }
+
+        default-player-permission-level(){
+            NEW="$(echo $NEW | sed 's|permission=||g')"
+            OLD=$(cat "$WORDC" | grep default-player-permission-level= )
+            echo $NEW
+                case $NEW in
+                    operator) sed -i -e  "s|$OLD|default-player-permission-level=operator|g" "$WORDC";;
+                    member) sed -i -e "s|$OLD|default-player-permission-level=member|g" "$WORDC";;
+                    visitor) sed -i -e "s|$OLD|default-player-permission-level=visitor|g" "$WORDC";;
+                    *) echo "Não tivemos uma opção valida, tente usar tipo permission=visitor ou permission=member"
+                esac
+        }
+
+        server-port(){
+            NEW="$(echo $NEW | sed 's|port=||g')"
+            OLD=$(cat "$WORDC" | grep server-port= )
+            echo $NEW        
+                if [ "$NEW" == '0' ]
+                then
+                echo "Not permited 0"
+                else
+                sed -i -e "s|$OLD|server-port=$NEW|g" "$WORDC"
+                fi
+
+        }
+
+        server-portv6(){
+        NEW="$(echo $NEW | sed 's|portv6=||g')"
+            OLD=$(cat "$WORDC" | grep server-portv6= )
+            echo $NEW        
+                if [ "$NEW" == '0' ]
+                then
+                echo "Not permited 0"
+                else
+                sed -i -e "s|$OLD|server-portv6=$NEW|g" "$WORDC"
+                fi
+        }
+
+
+        for as in $2 $3 $4 $5 $6 $7 $8 $9
+        do
+            NEW=0
+            echo "Seu mapa atual: $PASTA"
+            case $as in
+                xbox=*) NEW="$as" online-mode;;
+                player=*) NEW="$as" max-players;;
+                permission=*) NEW="$as" default-player-permission-level;;
+                port=*) NEW="$as" server-port;;
+                portv6=*) NEW="$as" server-portv6
+            esac
+        done
+    fi
+elif [ "$1" == 'get' ]
+then
+    if [ -z  $2 ]
+    then 
+        echo "Por Favor Selecione uma opção"
+    else
+        for as in $2 $3 $4 $5 $6 $7 $8 $9
+        do
+            case $as in
+                xbox) cat "$WORDC" | grep online-mode= | sed 's|online-mode=||g';;
+                player) cat "$WORDC" | grep max-players= | sed 's|max-players=||g';;
+                permission) cat "$WORDC" | grep default-player-permission-level= | sed 's|default-player-permission-level=||g';;
+                port) cat "$WORDC" | grep server-port= | sed 's|server-port=||g';;
+                portv6) cat "$WORDC" | grep server-portv6= | sed 's|server-portv6=||g'
+            esac
+        done
+    fi
+else
+    echo "Não foi selecionado set ou get no comando"
+fi
+echo "estamos Iniciando o servidor"
+service bds start
+exit 0
