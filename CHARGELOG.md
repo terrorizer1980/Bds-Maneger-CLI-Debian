@@ -1,4 +1,12 @@
-# 03/10/2020 - Version 1.4.12
+# 12/10/2020 - Version 1.4.14
+
+Foi modificado a forma na qual temos que usar o google drive (Ainda não testado mas funcional)
+
+A versão 1.4.13 não foi nada relevante mas foi citado.
+
+---
+
+# 12/10/2020 - Version 1.4.12
 
 Foi adicionado um comando novo para pegar algumas informações no server.proprieties.
 

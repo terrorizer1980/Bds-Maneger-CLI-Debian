@@ -1,5 +1,14 @@
 #!/bin/bash
 ##
+
+case `arch` in
+    x86_64) GDRIVEP=gdrive_amd64;;
+    i*68) GDRIVEP=gdrive_i386;;
+    arm*) GDRIVEP=gdrive_arm;;
+    aarch64) GDRIVEP=gdrive_arm64;;
+    *) echo "Não temos uma versão suportada"
+esac
+echo "Gdrive Program Version: $GDRIVEP"
 BC1=$(cat /etc/bds-maneger/install.json | jq ".gdrive.stage" | sed 's|"||g')
 case $BC1 in
     off) echo "Não Havera backup, pois esta off";exit;;
@@ -23,7 +32,7 @@ esac
     TM="/tmp"
 # ROOTID
     echo "Pegando a ID da nova pasta"
-    GDRIVE_FOLDE=$(gdrive mkdir $GDRIVEDATE -p $ROOTID | sed 's| created||g' | sed 's|Directory ||g')
+    GDRIVE_FOLDE=$($GDRIVEP mkdir $GDRIVEDATE -p $ROOTID | sed 's| created||g' | sed 's|Directory ||g')
 # Confirmando    
     echo "ok"
     cd "$PATH_TO_INSTALL"
@@ -34,6 +43,6 @@ esac
     zip --quiet "$DATE.zip" -r *
     cp "$DATE.zip" "$BACKUP"
 # Subindo para o Google Drive
-    gdrive upload "$DATE.zip" --parent "$GDRIVE_FOLDE"
+    $GDRIVEP upload "$DATE.zip" --parent "$GDRIVE_FOLDE"
 # Removendo arquivo zip temporario
     rm "$DATE.zip"

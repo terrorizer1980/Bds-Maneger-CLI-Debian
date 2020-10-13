@@ -144,6 +144,11 @@ oldtonew(){
         exit 23
     fi
 }
+
+speedtest_internet(){
+    echo "scale=2; $(echo 6161442) * 0.000008" | bc | head -c 5
+}
+
 # As opções como comandos - end
 
 figlet Minecraft Bedrock
