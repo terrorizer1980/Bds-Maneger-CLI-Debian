@@ -12,4 +12,4 @@ if [ $pid_exist == 0 ]; then
   ME2="$(ps -o vsz= $pid | awk '{printf "%.0f\n", $1 / 1024}')"
   latestscpu="$(echo $cpu_mem_usage | awk '{print substr($0, 1, 5)}'|sed 's| ||g')"
   echo -ne "\rUtilizações: CPU $latestscpu )-( Memoria $ME MB )-( Memoria Virtual $ME2 MB  "
-done
+ fi
