@@ -6,8 +6,7 @@ fi
 
 PASTA="$(cat /opt/BDS-Common/server.properties | grep 'level-name=' | sed 's|level-name=||g')"
 WORDC="/etc/BDS-Common/worlds/$PASTA/server.properties"
-echo "Parando o Servidor"
-service bds stop
+
 if [ $1 == 'set' ]
 then
     if [ -z "$2" ]
@@ -74,7 +73,8 @@ then
                 fi
         }
 
-
+        echo "Parando o Servidor"
+        service bds stop
         for as in $2 $3 $4 $5 $6 $7 $8 $9
         do
             NEW=0
@@ -87,6 +87,8 @@ then
                 portv6=*) NEW="$as" server-portv6
             esac
         done
+        echo "estamos Iniciando o servidor"
+        service bds start
     fi
 elif [ "$1" == 'get' ]
 then
@@ -108,6 +110,4 @@ then
 else
     echo "Não foi selecionado set ou get no comando"
 fi
-echo "estamos Iniciando o servidor"
-service bds start
 exit 0
