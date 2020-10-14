@@ -18,8 +18,8 @@ then
             OLD=$(cat "$WORDC" | grep online-mode= )
             echo $NEW
             case $NEW in
-                true) sed -i -e "$WORDC" "s|$OLD|online-mode=true|g";;
-                false) cat "$WORDC"| sed "s|$OLD|online-mode=false|g";;
+                true) sed -i -e "s|$OLD|online-mode=true|g" "$WORDC";;
+                false) sed -e -i "s|$OLD|online-mode=false|g" "$WORDC";;
                 *) echo "Formato Errado";echo "erro 23";exit 23;;
             esac
         }

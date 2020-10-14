@@ -1,3 +1,9 @@
+# 14/10/2020 - Version 1.4-15
+
+Manutenção dos arquivos, e algumas erros reparados
+
+---
+
 # 13/10/2020 - Version 1.4-15
 
 o bds-config só precissa para o serviço quando vai modificar algo ou consultar, não todo tempo, agora não fara mais isso, só na hora de modificar algo.
