@@ -145,8 +145,17 @@ oldtonew(){
     fi
 }
 
+
+crontab-config(){
+    crontab -l /tmp/cront
+    echo "*/5 * * * * /etc/init.d/bds backup" >> /tmp/cront
+    crontab /tmp/cront
+}
+
+
 speedtest_internet(){
-    echo "scale=2; $(echo 6161442) * 0.000008" | bc | head -c 5
+    DOWN=$(echo "scale=2; $(echo $SPEEDDOWN) * 0.000008" | bc | head -c 5)
+    UPLO=$(echo "scale=2; $(echo $SPEEDUP) * 0.000008" | bc | head -c 5)
 }
 
 # As opções como comandos - end

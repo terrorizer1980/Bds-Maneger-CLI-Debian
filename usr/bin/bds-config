@@ -24,6 +24,17 @@ then
             esac
         }
 
+        whitelist(){
+            NEW="$(echo $NEW | sed 's|whitelist=||g')"
+            OLD=$(cat "$WORDC" | grep white-list= )
+            echo $NEW
+            case $NEW in
+                true) sed -i -e "s|$OLD|white-list=true|g" "$WORDC";;
+                false) sed -e -i "s|$OLD|white-list=false|g" "$WORDC";;
+                *) echo "Formato Errado";echo "erro 23";exit 23;;
+            esac
+        }
+
         max-players(){
             NEW="$(echo $NEW | sed 's|player=||g')"
             OLD=$(cat "$WORDC" | grep max-players= )
@@ -74,13 +85,15 @@ then
         }
 
         echo "Parando o Servidor"
-        service bds stop
+         service bds stop
+        echo "Servidor parado"
+        echo "Seu mapa atual: $PASTA"
         for as in $2 $3 $4 $5 $6 $7 $8 $9
         do
             NEW=0
-            echo "Seu mapa atual: $PASTA"
             case $as in
                 xbox=*) NEW="$as" online-mode;;
+                whitelist=*) NEW="$as" whitelist;;
                 player=*) NEW="$as" max-players;;
                 permission=*) NEW="$as" default-player-permission-level;;
                 port=*) NEW="$as" server-port;;
@@ -88,7 +101,8 @@ then
             esac
         done
         echo "estamos Iniciando o servidor"
-        service bds start
+         service bds start
+        echo "Servidor foi iniciado"
     fi
 elif [ "$1" == 'get' ]
 then

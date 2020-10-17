@@ -1,6 +1,8 @@
-# 16/10/2020 - Version 1.4-17
+# 16/10/2020 - Version 1.4-17, 1.4-18
 
 Alterações do bds-status
+
+E outras modificações
 
 ---
 

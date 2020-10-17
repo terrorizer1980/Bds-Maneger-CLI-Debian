@@ -9,15 +9,13 @@ command-send(){
     DDs="0"
     LLS="$(cat /tmp/mcpe.txt | wc -l)"
     screen -S bedrock -p 0 -X stuff "$COMMANDS\n" && suss=0
-
     if [ $suss = '0' ];then
         MOD="$(cat /tmp/mcpe.txt)"
+        echo "Aguarde"
         while true
         do
             if [ "$(cat /tmp/mcpe.txt)" != "$MOD" ]; then
-            break
-            else
-            echo -ne "\rAguarde"
+                break
             fi
         done
         LLS2="$(cat /tmp/mcpe.txt | wc -l)"
