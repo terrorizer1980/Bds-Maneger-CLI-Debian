@@ -1,6 +1,8 @@
-# 17/10/2020 - Version 1.5.1
+# 17/10/2020 - Version 1.5.1, 1.5.2
 
 Modificações de arquivos. mais nada.
+
+Não foi implementado o whitelist no `bds-config get whitelist`
 
 ---
 

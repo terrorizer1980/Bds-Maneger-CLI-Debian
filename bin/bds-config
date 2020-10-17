@@ -117,6 +117,7 @@ then
                 player) cat "$WORDC" | grep max-players= | sed 's|max-players=||g';;
                 permission) cat "$WORDC" | grep default-player-permission-level= | sed 's|default-player-permission-level=||g';;
                 port) cat "$WORDC" | grep server-port= | sed 's|server-port=||g';;
+                whitelist) cat "$WORDC" | grep white-list= | sed 's|white-list=||g';;
                 portv6) cat "$WORDC" | grep server-portv6= | sed 's|server-portv6=||g'
             esac
         done
