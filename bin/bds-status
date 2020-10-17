@@ -10,19 +10,10 @@ if [ $pid_exist == 0 ]; then
   latestscpu=$(top -b -n 1 -p $pid | grep -w -E "^ *$pid" | awk '{print $9 "," $pid0}' | sed "s|$pid||g" | sed 's|root||g' | sed 's|bedrock_server||g' | tr 'n' , | sed s/,$// | awk '{print substr($0, 1, 6)}'|sed 's| ||g'| sed -E 's|,[0-9],||g')
   ME="$(ps -o rss= $pid | awk '{printf "%.0f\n", $1 / 1024}')"
   ME2="$(ps -o vsz= $pid | awk '{printf "%.0f\n", $1 / 1024}')"
-# ---------------------------------  
-  if [ $CPU == 'true' ] &> /dev/null
-  then
-    echo "$latestscpu"
-  fi
-# ---------------------------------
-  if [ $MEM == 'true' ] &> /dev/null
-  then
-    echo "$ME"
-  fi
-# ---------------------------------
-  if [ $ALL == 'true' ] &> /dev/null
-  then
-   echo "Utilizações: CPU $latestscpu )-( Memoria $ME MB )-( Memoria Virtual $ME2 MB"
-  fi
+  case $1 in
+    CPU|cpu) echo "$latestscpu";;
+    MEM|mem) echo "$ME";;
+    MEMV|memv) echo "$ME2";;
+    ALL|all) echo "Utilizações: CPU $latestscpu )-( Memoria $ME MB )-( Memoria Virtual $ME2 MB";;
+  esac
 fi

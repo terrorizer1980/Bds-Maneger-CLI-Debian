@@ -19,7 +19,7 @@ ROOTS="0"
  TMP=/tmp/Minecraft-temp
  mkdir /tmp &> /dev/null
  rm -rf $TMP/level.txt >> $USUARIO/log.txt 2>&1 ;
- PORTAD="$(cat "/etc/bds-maneger/install.json" | jq ".global.port" | sed 's|"||g')";DOMAINTEST=$(cat "/etc/bds-maneger/install.json" | jq ".pages.domain" | sed 's|"||g')
+ DOMAINTEST=$(cat "/etc/bds-maneger/install.json" | jq ".pages.domain" | sed 's|"||g')
  IPDOMAIN="$([ $DOMAINTEST = 'null' ] && wget -qO- http://ipecho.net/plain || echo $DOMAINTEST)"
  IP_V4="$(ip addr | grep 'inet' | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1)"
  IP_V6="$(ifconfig | grep "inet6" | awk -F' ' '{print $2}' | awk '{print $1}' | head -1) "
@@ -69,25 +69,29 @@ rm -rf /etc/init.d/bds
 
 installapache(){
 
-      #Instalação do apache2
-      echo "Instalando o Apache2"
-       apt update >> /dev/null 2>&1 
-       apt install apache2 -y >> /dev/null 2>&1 
+    #Instalação do apache2
+    echo "Instalando o Apache2"
+    apt update >> /dev/null 2>&1 
+    apt install apache2 -y >> /dev/null 2>&1 
 
-      # Removendo pasta HTML e Adicionando denovo
-      echo "Estamos removendo a pasta html qualquer coisa nela será apagado"
-      rm -rf /var/www/html/
-      mkdir /var/www/html/
+    # Removendo pasta HTML e Adicionando denovo
+    echo "Estamos removendo a pasta html qualquer coisa nela será apagado"
+    rm -rf /var/www/html/
+    mkdir /var/www/html/
 
-      # Copiando os arquivos
-      cp -rf /opt/bds-maneger/html-files/* /var/www/html/
+    # Copiando os arquivos
+    cp -rf /opt/bds-maneger/html-files/* /var/www/html/
 
-      # Pegando as config
-      echo "Agora vamos começar a configurar o nova pagina do Apache"
-      
-      # Montando as Configurações
-      sed -i "s|ENDEREÇODOSERVIDOROUIP|$IPDOMAIN|g" "/var/www/html/index.html"
-      sed -i "s|PORTASERVER|$PORTAD|g" "/var/www/html/index.html"
+    # Pegando as config
+    echo "Agora vamos começar a configurar o nova pagina do Apache"
+    
+    PORTAD="$(cat '/etc/BDS-Common/server.properties'|grep 'server-port='|sed 's|server-port=||g'|head -1)";
+    PORTADv6="$(cat '/etc/BDS-Common/server.properties'|grep 'server-portv6='|sed 's|server-portv6=||g'|head -1)";
+
+    # Montando as Configurações
+    sed -i "s|ENDEREÇODOSERVIDOROUIP|$IPDOMAIN|g" "/var/www/html/index.html"
+    sed -i "s|PORTASERVER|$PORTAD|g" "/var/www/html/index.html"
+    sed -i "s|PORTASERVERv6|$PORTADv6|g" "/var/www/html/index.html"
 }
 
 smbftp(){
