@@ -7,6 +7,27 @@ then
     systemctl daemon-reload
 fi
 
+If [ -e /etc/bds-maneger/install.json ]
+then
+ echo "a version of install.json has been identified, we will not create a"
+else
+    echo "
+{
+    "global":{
+        "port": "19132",
+        "backup_folder": "/etc/BDS-Common/Backup"
+    },
+    "gdrive":{
+        "ID": "",
+        "stage": "off"
+    },
+    "pages":{
+        "domain": "exemplo.com"
+    }
+}
+" > /etc/bds-maneger/install.json
+fi
+
 echo "Ainda estamos montando uma pré-configuração"
 
 exit 0

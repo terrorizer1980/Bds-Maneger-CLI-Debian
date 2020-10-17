@@ -1,3 +1,8 @@
+# 17/10/2020 - Version 1.5.0
+
+Modificações de arquivos. mais nada.
+
+
 # 16/10/2020 - Version 1.4-17, 1.4-18
 
 Alterações do bds-status

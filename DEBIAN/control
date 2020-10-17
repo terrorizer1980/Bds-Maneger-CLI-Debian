@@ -1,5 +1,5 @@
 Package: bds-maneger
-Version: 1.4-18
+Version: 1.5.0
 Section: bysh23
 Architecture: all
 Homepage: https://github.com/Sirherobrine23/bds-maneger
@@ -7,5 +7,5 @@ Essential: no
 Depends: screen, dos2unix, jq, zip, unzip, net-tools, bds-common, gdrive, figlet, whiptail, speedtest-cli
 Conflicts: bds, bds-install
 Maintainer: Matheus Sampaio Queiroga (Sirherobrine23) <srherobrine20@gmail.com>
-Description: Pequeno script para o gerenciamento do Minecraft Bedrock Server
- Pode ser simples de usar mais tem varias funcionalidades que vai ajudar muito além de gerenciamento do Minecraft Bedrock Server
+Description: Minecraft Bedrock Server is a way for you to host your Minecraft Bedrock server in your own home or on a cloud service of your choice
+ The purpose of this package is to simplify various processes from maintenance to management.
