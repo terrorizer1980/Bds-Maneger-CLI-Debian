@@ -1,3 +1,11 @@
+# 21/10/2020 - Version 1.5.3
+
+Modificações gerais para o funcionamento do bds-gui junto com a versão-cli.
+
+Melhorias Forão Aplicadas
+
+---
+
 # 17/10/2020 - Version 1.5.1, 1.5.2
 
 Modificações de arquivos. mais nada.
