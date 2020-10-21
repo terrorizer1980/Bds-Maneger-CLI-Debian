@@ -97,7 +97,7 @@ then
                 player=*) NEW="$as" max-players;;
                 permission=*) NEW="$as" default-player-permission-level;;
                 port=*) NEW="$as" server-port;;
-                portv6=*) NEW="$as" server-portv6
+                portv6=*) NEW="$as" server-portv6;;
             esac
         done
         echo "estamos Iniciando o servidor"

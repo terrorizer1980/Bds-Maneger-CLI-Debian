@@ -4,9 +4,10 @@
         "port": "19132",
         "backup_folder": "/etc/BDS-Common/Backup"
     },
-    "gdrive":{
+    "backup":{
         "ID": "", // Exemplo de ID da pasta: 1-FWzQJWhhJK_00ETU4uVOg6R5c5p_yMP
-        "stage": "" // Caso Queira basta colocar 'on' se não quiser basta adiconar 'off' caso não tenha nada será considerado 'off'
+        "active": "off", // Caso Queira basta colocar 'on' se não quiser basta adiconar 'off' caso não tenha nada será considerado 'off'
+        "local": "/var/www/Minecraft" // Pasta local dos backups, por padrão é /var/www/Minecraft
     },
     "pages":{
         "domain": "exemplo.com" // Não incluir o http:// ou https:// isso será feito automaticamente

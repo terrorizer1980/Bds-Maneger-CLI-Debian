@@ -3,74 +3,104 @@ if [ "$EUID" -ne 0 ]; then
 echo "Você não está executando o script com root ou sudo, por favor execute de novo o com: $0 $1"
 exit 13
 fi
-echo "Parando o Servidor"
-service bds stop
 cd /etc/BDS-Common/worlds/
-echo "---------------------"
 # Init
-echo "Listando os mapas"
 for cOs in *
 do
   if [ -d "${cOs}" ]
   then
+    # Server.properties
     if [ -e "$cOs/server.properties" ]
     then
-        echo "$cOs já tem um server.properties"
+        test
     else
-      echo "Criando uma configuração para: $cOs"
       cat /opt/bds-maneger/server.properties | sed "s|server-name=Sirherobrine23-AutoScript|server-name=${cOs}|g" | sed "s|level-name=New_World|level-name=${cOs}|g" > "$cOs/server.properties"
     fi
-
+    # Permissions
     if [ -e /etc/BDS-Common/permissions.json ]
     then
       if [ -e "$cOs/permissions.json" ]
       then
-          echo "$cOs já tem um permissions.json"
+          test
       else
-        echo "Copiando o permissions.json para: $cOs"
         cat /etc/BDS-Common/permissions.json > "$cOs/permissions.json"
       fi
     else
       echo "Não Temos Um arquivo permissions.json no diretorio do servidor"
     fi
-
     if [ -e /etc/BDS-Common/whitelist.json ]
     then
       if [ -e "$cOs/whitelist.json" ]
       then
-          echo "$cOs já tem um whitelist.json"
+          test
       else
-        echo "Copiando a whitelist para: $cOs"
         cat /etc/BDS-Common/whitelist.json > "$cOs/whitelist.json"
       fi
     else
       echo "Nao temos um arquivo whitelist.json no diretorio do servidor"
     fi
-
-
   else
-    echo "Não Podemos criar um server.properties para o arquivo ${cOs}"
+    echo "Não Podemos criar as configurações para o mapa: ${cOs}"
   fi
 done
-echo "---------------------"
-echo "Por Favor selecione um Mapa (Só o Número)"
-select MPA in exit */
-do 
- test -n "$MPA" && break
- echo ">>> Por Favor selecione o mapa e coloque seu nomero"
-done
 
-if [ -z "$MPA" ]
-then
-  echo "Não foi selecionado nenhum mapa. Continuando com a Versão Antiga"
-else
-  if [ "$MPA" == 'exit' ]
+selectmapmanual(){
+  echo "Por Favor selecione um Mapa (Só o Número)"
+  select MPA in exit */
+  do 
+  test -n "$MPA" && break
+  echo ">>> Por Favor selecione o mapa e coloque seu nomero"
+  done
+
+  if [ -z "$MPA" ]
+  then
+    echo "Não foi selecionado nenhum mapa. Continuando com a Versão Antiga"
+  else
+    setmap
+  fi
+}
+
+setmap(){
+if [ "$MPA" == 'exit' ]
   then
     echo "Saindo e mantendo o mapa antigo"
   else
-    echo "O mapa Selecionado foi: $MPA , alterando configurações do servidor e o Mapa ..."
-    cat "$MPA/server.properties" > /etc/BDS-Common/server.properties
-    echo "Estamos iniciando o servidor novamente!!!, aguarde ..."
-   fi
+    if [ -d $MPA ];then
+      echo "O mapa Selecionado foi: $MPA, alterando configurações do servidor para o mapa $MPA"
+      cat "$MPA/server.properties" > /etc/BDS-Common/server.properties
+    else
+      echo "Esse mapa não existe"
+    fi
+  fi
+}
+
+getguimap(){
+  # find ./ -maxdepth 1 -type d | sed 's|./||g'
+  for guis in */
+  do 
+    re="$(echo $guis|sed 's|/||g')"
+    echo "<option value="\"$re\"">$re</option>"
+  done
+}
+if [ $1 == 'get' ] &> /dev/null;then
+  if [ $2 == 'gui' ] &> /dev/null;then
+    getguimap
+  else
+    echo "por favor utilize uma opção valida"
+  fi
 fi
+
+if [ $1 == 'set' ] &> /dev/null;then
+echo "Parando o Servidor"
+service bds stop
+echo "Servidor parado ..."
+  if [ $2 == 'man' ]  &> /dev/null;then
+    MPA="$3"
+    setmap
+  else
+    selectmapmanual
+  fi
+echo "Iniciando o Servidor"
 service bds start
+echo "O servidor foi iniciado."
+fi

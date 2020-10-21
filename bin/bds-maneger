@@ -67,12 +67,12 @@ update-rc.d bds disable
 rm -rf /etc/init.d/bds
 }
 
-installapache(){
+installnginx(){
 
-    #Instalação do apache2
-    echo "Instalando o Apache2"
+    #Instalação do nginx
+    echo "Instalando o nginx"
     apt update >> /dev/null 2>&1 
-    apt install apache2 -y >> /dev/null 2>&1 
+    apt install nginx -y >> /dev/null 2>&1 
 
     # Removendo pasta HTML e Adicionando denovo
     echo "Estamos removendo a pasta html qualquer coisa nela será apagado"
@@ -83,7 +83,7 @@ installapache(){
     cp -rf /opt/bds-maneger/html-files/* /var/www/html/
 
     # Pegando as config
-    echo "Agora vamos começar a configurar o nova pagina do Apache"
+    echo "Agora vamos começar a configurar o nova pagina do nginx"
     
     PORTAD="$(cat '/etc/BDS-Common/server.properties'|grep 'server-port='|sed 's|server-port=||g'|head -1)";
     PORTADv6="$(cat '/etc/BDS-Common/server.properties'|grep 'server-portv6='|sed 's|server-portv6=||g'|head -1)";
@@ -201,7 +201,7 @@ read -rp "
 2: Para o Servidor manualmente
 3: Adicionar um serviço para iniciar junto com o sistema
 4: Remover o serviço que iniciar o BDS junto com sistema
-5: Instalar o apache para ter uma pagina para adionar o servidor via navegador
+5: Instalar o nginx para ter uma pagina para adionar o servidor via navegador
 6: Instalar o servidor samba e ftp para acesso remoto
 7: Atualizando antigas versões para a nova (Isso caso voçê tenha usado os pacotes bds e bds-install)
 
@@ -220,7 +220,7 @@ LE="$(whiptail --cancel-button "Sair" --title "Minecraft Bedrock Server Maneger"
 "2" "Para o Servidor manualmente" \
 "3" "Adicionar um serviço para iniciar junto com o sistema" \
 "4" "Remover o serviço que iniciar o BDS junto com sistema" \
-"5" "Instalar o apache para ter uma pagina para adionar o servidor via navegador" \
+"5" "Instalar o nginx para ter uma pagina para adionar o servidor via navegador" \
 "6" "Instalar o servidor samba e ftp para acesso remoto" \
 "7" "Atualizando antigas versões para a nova, Isso caso voçê tenha usado os pacotes bds e bds-install" 3>&1 1>&2 2>&3)"
 
@@ -232,7 +232,7 @@ fi
     2) stopserver;;
     3) addservice;;
     4) removerservice;;
-    5) installapache;;
+    5) installnginx;;
     6) smbftp;;
     7) oldtonew;;
     *) echo "saindo ...";break

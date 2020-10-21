@@ -1,29 +1,15 @@
 #!/bin/bash
-
+echo
+echo
 if [ -e /etc/init.d/bds ];then
     echo "Estamos atualizando os serviços do bds-maneger"
     cp -f /opt/bds-maneger/start-on-system.sh /etc/init.d/bds
     systemctl daemon-reload
 fi
-
+# ---------------------------
 if [ -e /etc/bds-maneger/install.json ];then
- echo "a version of install.json has been identified, we will not create a"
-else
-    echo "{
-    "global":{
-        "port": "19132",
-        "backup_folder": "/etc/BDS-Common/Backup"
-    },
-    "gdrive":{
-        "ID": "",
-        "stage": "off"
-    },
-    "pages":{
-        "domain": "exemplo.com"
-    }
-}" > /etc/bds-maneger/install.json
+    echo "Por Favor modifique o install.json, podemos ter modificado algo. as modificações estão no exemplo.json"
 fi
-
-echo "Ainda estamos montando uma pré-configuração"
-
+echo
+echo
 exit 0

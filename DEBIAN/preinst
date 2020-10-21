@@ -1,0 +1,10 @@
+#!/bin/bash
+echo
+echo
+if command -v nginx &> /dev/null;then
+    echo "Vamos atualizar as configurações do nginx"
+    cp -f "/etc/nginx/sites-available/Minecraft" "/etc/bds-maneger/Minecraft-Nginx-$(TZ=UTC+3 date +"%d_%m_%Y")"
+fi
+echo
+echo
+exit 0

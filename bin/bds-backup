@@ -9,12 +9,11 @@ case `arch` in
     *) echo "Não temos uma versão suportada"
 esac
 echo "Gdrive Program Version: $GDRIVEP"
-BC1=$(cat /etc/bds-maneger/install.json | jq ".gdrive.stage" | sed 's|"||g')
+BC1=$(cat /etc/bds-maneger/install.json | jq ".backup.active" | sed 's|"||g')
 case $BC1 in
-    off) echo "Não Havera backup, pois esta off";exit;;
-    OFF) echo "Não Havera backup, pois esta OFF";exit;;
+    off|OFF) echo "Não Havera backup, pois esta off";exit;;
     '') echo "Nenhuma informação foi Fornecida, Não Havera backup";exit;;
-    null) echo "Nenhuma informação foi Fornecida, Não Havera backup";exit
+    *null*) echo "Nenhuma informação foi Fornecida, Não Havera backup";exit
 esac
     if [ -e /tmp/bds-keep ] 
     then
@@ -24,8 +23,8 @@ esac
     fi
 # VAR
     PATH_TO_INSTALL="/etc/BDS-Common/worlds"
-    ROOTID="$(cat /etc/bds-maneger/install.json | jq ".gdrive.ID" | sed 's|"||g')"
-    BACKUP="$(cat /etc/bds-maneger/install.json | jq ".global.backup_folder" | sed 's|"||g')"
+    ROOTID="$(cat /etc/bds-maneger/install.json | jq ".backup.ID" | sed 's|"||g')"
+    BACKUP="$(cat /etc/bds-maneger/install.json | jq ".backup.local" | sed 's|"||g')"
 # Datas
     DATE=$(TZ=UTC+3 date +"%d-%m-%Y_%H-%M-%S")
     GDRIVEDATE="$(TZ=UTC+3 date +"%d/%m/%Y-%H-%M-%S")"
@@ -36,7 +35,7 @@ esac
 # Confirmando    
     echo "ok"
     cd "$PATH_TO_INSTALL"
-    echo "Nome do Backup: $DATE"
+    echo "Nome do Backup: $DATE.zip"
     echo "Nome da subpasta: $GDRIVEDATE"
     echo "Id da subpasta: $GDRIVE_FOLDE"
 # Compactando arquivo zip Temporario e fazendo backup Local
@@ -44,5 +43,13 @@ esac
     cp "$DATE.zip" "$BACKUP"
 # Subindo para o Google Drive
     $GDRIVEP upload "$DATE.zip" --parent "$GDRIVE_FOLDE"
-# Removendo arquivo zip temporario
-    rm "$DATE.zip"
+
+if [ -z $BACKUP ];then
+# Movendo
+    mkdir -r "$BACKUP/$DATE"
+    mv -fv "$DATE.zip" "$BACKUP/$DATE/"
+fi
+# Removendo arquivo zip temporario caso tenho
+    if [ -e "$DATE.zip" ];then
+        rm "$DATE.zip"
+    fi

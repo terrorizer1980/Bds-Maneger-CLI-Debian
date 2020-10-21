@@ -1,0 +1,19 @@
+server {
+	listen 8080 default_server;
+	listen [::]:8080 default_server;
+
+
+	root /var/www/Minecraft;
+
+	index index.html index.htm;
+
+	server_name _;
+
+	location / {
+		autoindex on;
+	}
+
+
+}
+
+
