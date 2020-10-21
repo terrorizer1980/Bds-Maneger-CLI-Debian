@@ -10,6 +10,11 @@ fi
 if [ -e /etc/bds-maneger/install.json ];then
     echo "Por Favor modifique o install.json, podemos ter modificado algo. as modificações estão no exemplo.json"
 fi
+if command -v nginx &> /dev/null;then
+    echo "Reiniciando os Serviços do nginx"
+    service nginx restart
+    echo "Não esqueça as portas são: IP/host:8080"
+fi
 echo
 echo
 exit 0
