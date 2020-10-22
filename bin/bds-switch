@@ -65,7 +65,7 @@ if [ "$MPA" == 'exit' ]
   then
     echo "Saindo e mantendo o mapa antigo"
   else
-    if [ -d $MPA ];then
+    if [ -e "$MPA/server.properties" ];then
       echo "O mapa Selecionado foi: $MPA, alterando configurações do servidor para o mapa $MPA"
       cat "$MPA/server.properties" > /etc/BDS-Common/server.properties
     else
@@ -91,16 +91,17 @@ if [ $1 == 'get' ] &> /dev/null;then
 fi
 
 if [ $1 == 'set' ] &> /dev/null;then
+MPA="$(echo $3 $4 $5 $6 $7 $8 $9)"
+echo "Mapa Selecionado: $MPA"
 echo "Parando o Servidor"
 service bds stop
 echo "Servidor parado ..."
   if [ $2 == 'man' ]  &> /dev/null;then
-    MPA="$3"
     setmap
   else
     selectmapmanual
   fi
 echo "Iniciando o Servidor"
-service bds start
+# service bds start
 echo "O servidor foi iniciado."
 fi
