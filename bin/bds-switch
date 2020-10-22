@@ -102,6 +102,6 @@ echo "Servidor parado ..."
     selectmapmanual
   fi
 echo "Iniciando o Servidor"
-# service bds start
+service bds start
 echo "O servidor foi iniciado."
 fi
