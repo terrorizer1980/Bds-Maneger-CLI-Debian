@@ -1,6 +1,4 @@
 #!/bin/bash
-##
-
 case `arch` in
     x86_64) GDRIVEP=gdrive_amd64;;
     i*68) GDRIVEP=gdrive_i386;;
@@ -8,7 +6,10 @@ case `arch` in
     aarch64) GDRIVEP=gdrive_arm64;;
     *) echo "Não temos uma versão suportada"
 esac
-echo "Gdrive Program Version: $GDRIVEP"
+if ! cat /etc/bds-maneger/install.json | grep -q '//';then
+    echo "You install.json have coment lines"
+    exit 127
+fi
 BC1=$(cat /etc/bds-maneger/install.json | jq ".backup.active" | sed 's|"||g')
 case $BC1 in
     off|OFF) echo "Não Havera backup, pois esta off";exit;;
@@ -20,36 +21,37 @@ esac
         echo "Foi Detectado o arquivo bds-keep";exit
     else
         echo "Iniciando o backup"
-    fi
-# VAR
-    PATH_TO_INSTALL="/etc/BDS-Common/worlds"
-    ROOTID="$(cat /etc/bds-maneger/install.json | jq ".backup.ID" | sed 's|"||g')"
-    BACKUP="$(cat /etc/bds-maneger/install.json | jq ".backup.local" | sed 's|"||g')"
-# Datas
-    DATE=$(TZ=UTC+3 date +"%d-%m-%Y_%H-%M-%S")
-    GDRIVEDATE="$(TZ=UTC+3 date +"%d/%m/%Y-%H-%M-%S")"
-    TM="/tmp"
-# ROOTID
-    echo "Pegando a ID da nova pasta"
-    GDRIVE_FOLDE=$($GDRIVEP mkdir $GDRIVEDATE -p $ROOTID | sed 's| created||g' | sed 's|Directory ||g')
-# Confirmando    
-    echo "ok"
-    cd "$PATH_TO_INSTALL"
-    echo "Nome do Backup: $DATE.zip"
-    echo "Nome da subpasta: $GDRIVEDATE"
-    echo "Id da subpasta: $GDRIVE_FOLDE"
-# Compactando arquivo zip Temporario e fazendo backup Local
-    zip --quiet "$DATE.zip" -r *
-    cp "$DATE.zip" "$BACKUP"
-# Subindo para o Google Drive
-    $GDRIVEP upload "$DATE.zip" --parent "$GDRIVE_FOLDE"
+        echo "Gdrive Program Version: $GDRIVEP"
+        # VAR
+            PATH_TO_INSTALL="/etc/BDS-Common/worlds"
+            ROOTID="$(cat /etc/bds-maneger/install.json | jq ".backup.ID" | sed 's|"||g')"
+            BACKUP="$(cat /etc/bds-maneger/install.json | jq ".backup.local" | sed 's|"||g')"
+        # Datas
+            DATE=$(TZ=UTC+3 date +"%d-%m-%Y_%H-%M-%S")
+            GDRIVEDATE="$(TZ=UTC+3 date +"%d/%m/%Y-%H-%M-%S")"
+            TM="/tmp"
+        # ROOTID
+            echo "Pegando a ID da nova pasta"
+            GDRIVE_FOLDE=$($GDRIVEP mkdir $GDRIVEDATE -p $ROOTID | sed 's| created||g' | sed 's|Directory ||g')
+        # Confirmando    
+            echo "ok"
+            cd "$PATH_TO_INSTALL"
+            echo "Nome do Backup: $DATE.zip"
+            echo "Nome da subpasta: $GDRIVEDATE"
+            echo "Id da subpasta: $GDRIVE_FOLDE"
+        # Compactando arquivo zip Temporario e fazendo backup Local
+            zip --quiet "$DATE.zip" -r *
+            cp "$DATE.zip" "$BACKUP"
+        # Subindo para o Google Drive
+            $GDRIVEP upload "$DATE.zip" --parent "$GDRIVE_FOLDE"
 
-if [ -z $BACKUP ];then
-# Movendo
-    mkdir -r "$BACKUP/$DATE"
-    mv -fv "$DATE.zip" "$BACKUP/$DATE/"
-fi
-# Removendo arquivo zip temporario caso tenho
-    if [ -e "$DATE.zip" ];then
-        rm "$DATE.zip"
+        if [ -z $BACKUP ];then
+        # Movendo
+            mkdir -r "$BACKUP/$DATE"
+            mv -fv "$DATE.zip" "$BACKUP/$DATE/"
+        fi
+        # Removendo arquivo zip temporario caso tenho
+            if [ -e "$DATE.zip" ];then
+                rm "$DATE.zip"
+            fi
     fi

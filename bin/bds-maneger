@@ -1,24 +1,27 @@
 #!/bin/bash
 ROOTS="0"
-    if command -v bds >/dev/null 2>&1;then
-        echo "..."
-    else
-        echo "o comando bsd não foi indentificado, verifique se o bds-common está instalado, continuando ..."
-    fi
-    if [ "$EUID" -ne $ROOTS ]; then
-        echo "Você não está executando o script com root ou sudo, por favor execute de novo o com: $0 $1"
-        exit 23
-    fi
-    if [[ -e /etc/bds-maneger/install.json ]];then
-        test
-    else
-        echo "Por favor coloque um aquivo com o nome install.json na pasta /etc/bds-maneger ou se não, copia e renomeia o arquivo exemplo_install.jsonc"
-        exit 127
-    fi
+if command -v bds >/dev/null 2>&1;then
+    echo "..."
+else
+    echo "o comando bsd não foi indentificado, verifique se o bds-common está instalado, continuando ..."
+fi
+if [ "$EUID" -ne $ROOTS ]; then
+    echo "Você não está executando o script com root ou sudo, por favor execute de novo o com: $0 $1"
+    exit 23
+fi
+if [[ -e /etc/bds-maneger/install.json ]];then
+    test
+else
+    echo "Por favor coloque um aquivo com o nome install.json na pasta /etc/bds-maneger ou se não, copia e renomeia o arquivo exemplo_install.jsonc"
+    exit 127
+fi
+if ! cat /etc/bds-maneger/install.json | grep -q '//';then
+    echo "You install.json have coment lines"
+    exit 127
+fi
 # --------------- Codigo ------------------------------
  TMP=/tmp/Minecraft-temp
- mkdir /tmp &> /dev/null
- rm -rf $TMP/level.txt >> $USUARIO/log.txt 2>&1 ;
+ mkdir $TMP &> /dev/null
  DOMAINTEST=$(cat "/etc/bds-maneger/install.json" | jq ".pages.domain" | sed 's|"||g')
  IPDOMAIN="$([ $DOMAINTEST = 'null' ] && wget -qO- http://ipecho.net/plain || echo $DOMAINTEST)"
  IP_V4="$(ip addr | grep 'inet' | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1)"
@@ -29,93 +32,88 @@ ROOTS="0"
 # As opções como comandos - init
 startserver(){
     if ! screen -list | grep -q "bedrock"; then
-        echo "Estamos Iniciando seu Servidor!"
+        echo "We are stopping your server!"
         rm -rf /tmp/mcpe.txt
         screen -L -Logfile /tmp/mcpe.txt -dmS bedrock bds
     else
-        echo "isso não pode acontecer pois já tem um servidor rodando em segundo plano"
+        echo "This does not work with Minecraft Bedrock Server in the background"
     fi
 }
 
 stopserver(){
-    echo "Estamos Parando seu Servidor"
+    echo "We are stopping your server!"
     screen -S bedrock -p 0 -X stuff 'stop\n'
-    if whiptail --title "Vai quere fazer Backup do(s) mapa(s)" --yesno "Yes e No." 10 50
+    if whiptail --title "do you want me to backup your Worlds?" --yesno "Yes e No." 10 50
     then
         bds-backup
     else
-        echo "ok não vamos fazer backup"
+        echo "ok, there will be no backup of your Worlds!"
     fi
 }
 
 addservice(){
-    echo "Iniciando as Configurações do arquivo para Inicialização junto com o Sistema"
+    echo "Creating the settings to start on the system"
     cp /opt/bds-maneger/start-on-system.sh /etc/init.d/bds
     chmod a+x /etc/init.d/bds;
     update-rc.d bds defaults
     update-rc.d bds enable
-    echo "Pronto"
-    sleep 2
-    echo "O BDS agora irá inicia junto com sistema, o comando que controlar o serviço é:"
-    echo 'service bds start|stop|restart'
-    echo "Para desativar o inicio automatico, basta ir na opção para remover o servico nesse mesmo comando"
+    echo "The do Minecraft Bedrock Server is starting with system, help commands:"
+    echo 'service bds start'
+    echo 'service bds stop'
+    echo 'service bds restart'
+    echo 'service bds backup'
+    echo "How to disable service to Minecraft Bedrock Server, select option 4 in the menu"
+    sleep 5s
 }
 
 removerservice(){
-update-rc.d bds defaults-disabled
-update-rc.d bds disable
-rm -rf /etc/init.d/bds
+    echo "Disabled Minecraft Bedrock Server in systemctl"
+    update-rc.d bds defaults-disabled
+    update-rc.d bds disable
+    echo "Removing Minecraft on folder init.d"
+    rm -rf /etc/init.d/bds
 }
 
 installnginx(){
-
     #Instalação do nginx
-    echo "Instalando o nginx"
-    apt update >> /dev/null 2>&1 
-    apt install nginx -y >> /dev/null 2>&1 
-
-    # Removendo pasta HTML e Adicionando denovo
-    echo "Estamos removendo a pasta html qualquer coisa nela será apagado"
-    rm -rf /var/www/html/
-    mkdir /var/www/html/
-
-    # Copiando os arquivos
-    cp -rf /opt/bds-maneger/html-files/* /var/www/html/
+    echo "Installing the nginx server"
+    apt update &> /dev/null
+    apt install nginx -y &> /dev/null
 
     # Pegando as config
-    echo "Agora vamos começar a configurar o nova pagina do nginx"
+    echo "Now settings web pages to add Minecraft server list (simples html)"
     
-    PORTAD="$(cat '/etc/BDS-Common/server.properties'|grep 'server-port='|sed 's|server-port=||g'|head -1)";
-    PORTADv6="$(cat '/etc/BDS-Common/server.properties'|grep 'server-portv6='|sed 's|server-portv6=||g'|head -1)";
+    PORTAD="$(cat '/etc/BDS-Common/server.properties'|grep 'server-port='|sed 's|server-port=||g'|head -1)"
+    PORTADv6="$(cat '/etc/BDS-Common/server.properties'|grep 'server-portv6='|sed 's|server-portv6=||g'|head -1)"
+    MAPANAME="$(cat '/etc/BDS-Common/server.properties'|grep 'level-name='|sed 's|level-name=||g'|head -1)"
 
     # Montando as Configurações
-    sed -i "s|ENDEREÇODOSERVIDOROUIP|$IPDOMAIN|g" "/var/www/html/index.html"
-    sed -i "s|PORTASERVER|$PORTAD|g" "/var/www/html/index.html"
-    sed -i "s|PORTASERVERv6|$PORTADv6|g" "/var/www/html/index.html"
+    cat /opt/bds-maneger/html-files/index.html |sed "s|MAINSERVERNAME|$MAPANAME|g"|sed "s|ENDEREÇODOSERVIDOROUIP|$IPDOMAIN|g"|sed "s|PORTASERVERv6|$PORTADv6|g"|sed "s|PORTASERVER|$PORTAD|g" > /var/www/Minecraft/index.html
 }
 
 smbftp(){
-    echo "Instalando o samba e vsftpd"
+    echo "Installing the samba and vsftpd"
       # vsftp
-       apt install -y vsftpd samba >> /dev/null 2>&1 ;
+       apt install -y vsftpd samba &> /dev/null
 
-    echo "Liberando acesso do root no ftp"
+    echo "freeing root access on the ftp server"
       #config
       sed -i "s|root||g" "/etc/ftpusers"
 
-    echo "Terminado as configurações"
+    echo "Ending the settings"
       rm /etc/samba/smb.conf
       cp -rf /opt/bds-maneger/smb.conf /etc/samba/
       cp -rf /opt/bds-maneger/vsftp.conf /etc/vsftpd.conf
 
-    echo "Reiniciando o serviço do Samba"
+    echo "Restarting service the do samba (Windows Share)"
       service smbd restart
-    echo "Reiniciando o serviço do vsftpd"
+    echo "Restarting service the do vsftpd (FTP Server)"
       service vsftpd restart
 
-    echo "Terminamos de configurar o samba e vsftpd"
-    echo "Para adicionar um usuario no Smb use smbpasswd -a username"
-    echo "Para usar o ftp não precisar de nada a mais para navegar pelas pasta basta ter um usuario no sistema"
+    echo "we're done the settings do samba and vsftpd"
+    echo "To add user in ftp server just add one user in system"
+    sleep 2s
+    echo "To add user in smb (Windows Share) just user smbpass -a <USER>"
 }
 
 
@@ -151,15 +149,56 @@ oldtonew(){
 
 
 crontab-config(){
-    crontab -l /tmp/cront
-    echo "*/5 * * * * /etc/init.d/bds backup" >> /tmp/cront
-    crontab /tmp/cront
+    crontab -l > /tmp/cront
+    if ! cat /tmp/cront | grep -q '/etc/init.d/bds backup';then
+        echo "Your have one crontab config"
+    else
+        # MIN="0" 
+        echo "Select Number) for to minute"
+        select MIN in '*' 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59
+            do break;done
+        #  
+        # HOUR="23"
+        echo "Select Number) for to Hour"
+        select HOUR in '*' 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
+            do break;done
+        #  
+        # DAYMONTH="*" 
+        echo "Select Number) for to month day number"
+        select DAYMONTH in '*' 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+            do break;done
+        # 
+        # MONTH="*"
+        echo "Select Number) for to Month number"
+        select MONTH in '*' 1 2 3 4 5 6 7 8 9 10 11 12
+            do break;done 
+        # 
+        # DAYWEEK="*"
+        echo "Select Number) for to week day"
+        select DAYWEEK in '*' 1 2 3 4 5 6
+            do break;done
+
+        echo "$MIN $HOUR $DAYMONTH $MONTH $DAYWEEK /etc/init.d/bds backup" >> /tmp/cront
+        crontab /tmp/cront
+    fi
 }
 
 
 speedtest_internet(){
-    DOWN=$(echo "scale=2; $(echo $SPEEDDOWN) * 0.000008" | bc | head -c 5)
-    UPLO=$(echo "scale=2; $(echo $SPEEDUP) * 0.000008" | bc | head -c 5)
+    speedtest-cli > /tmp/speedtest.txt
+    DOWN="$(cat /tmp/speedtest.txt | grep 'Download:'|sed 's|Download:||g'|sed 's|Mbit/s||g'|sed 's| ||g'|sed -e 's|\.| |g'|awk '{print $1}')"
+    UPLO="$(cat /tmp/speedtest.txt | grep 'Upload:'|sed 's|Upload:||g'|sed 's|Mbit/s||g'|sed 's| ||g'|sed -e 's|\.| |g'|awk '{print $1}')"
+    if ! (($DOWN>10));then
+        echo "Temos uma internet rasoavel para Download"
+    else
+        echo "Não temos uma internet recomendada para Download"
+    fi
+    # 
+    if ! (($UPLO>10));then
+        echo "Temos uma internet rasoavel para Upload"
+    else
+        echo "Não temos uma internet recomendada para Upload"
+    fi
 }
 
 # As opções como comandos - end
@@ -237,8 +276,7 @@ fi
     7) oldtonew;;
     *) echo "saindo ...";break
     esac
-    echo "OK"
-    sleep 10s
+    echo "OK";sleep 1s
 done
 echo "--------------------------"
 # --------------- Codigo ------------------------------

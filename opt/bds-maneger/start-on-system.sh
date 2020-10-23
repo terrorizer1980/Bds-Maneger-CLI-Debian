@@ -18,104 +18,117 @@ rm -rf /tmp/mcpe.txt
 screen -L -Logfile /tmp/mcpe.txt -dmS bedrock bds
 }
 stopnomal(){
-    echo "server in stop in 10 Sec"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 10 Sec\n'
-        sleep 1s
-    echo "server in stop in 9 Sec"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 9 Sec\n'
-        sleep 1s
-    echo "server in stop in 8 Sec"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 8 Sec\n'
-        sleep 1s
-    echo "server in stop in 7 Sec"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 7 Sec\n'
-        sleep 1s
-    echo "server in stop in 6 Sec"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 6 Sec\n'
-        sleep 1s
-    echo "server in stop in 5 Sec"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 5 Sec\n'
-        sleep 1s
-    echo "server in stop in 4 Sec"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 4 Sec\n'
-        sleep 1s
-    echo "server in stop in 3 Sec"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 3 Sec\n'
-        sleep 1s
-    echo "server in stop in 2 Sec"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 2 Sec\n'
-        sleep 1s
-    echo "server in stop in 1 Sec"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 1 Sec\n'
-        sleep 1s
-    echo "server in stop in 0 Sec"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 0 Sec\n'
-        sleep 1s
-	screen -S bedrock -p 0 -X stuff 'stop\n'
-    while [ true ]
-    do 
-        if ! screen -list | grep -q "bedrock"; then
-            echo
-            bds-backup
-            break
-        fi
-    done
+    if ! screen -list | grep -q "bedrock"; then
+        echo "server in stop in 10 Sec"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 10 Sec\n'
+            sleep 1s
+        echo "server in stop in 9 Sec"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 9 Sec\n'
+            sleep 1s
+        echo "server in stop in 8 Sec"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 8 Sec\n'
+            sleep 1s
+        echo "server in stop in 7 Sec"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 7 Sec\n'
+            sleep 1s
+        echo "server in stop in 6 Sec"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 6 Sec\n'
+            sleep 1s
+        echo "server in stop in 5 Sec"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 5 Sec\n'
+            sleep 1s
+        echo "server in stop in 4 Sec"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 4 Sec\n'
+            sleep 1s
+        echo "server in stop in 3 Sec"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 3 Sec\n'
+            sleep 1s
+        echo "server in stop in 2 Sec"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 2 Sec\n'
+            sleep 1s
+        echo "server in stop in 1 Sec"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 1 Sec\n'
+            sleep 1s
+        echo "server in stop in 0 Sec"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 0 Sec\n'
+            sleep 1s
+        screen -S bedrock -p 0 -X stuff 'stop\n'
+        # 
+        while [ true ]
+        do 
+            if ! screen -list | grep -q "bedrock"; then
+                echo
+                bds-backup
+                break
+            fi
+        done
+    else
+        echo "You Server is not executing"
+    fi
 }
 
 stoprestart(){
-	screen -S bedrock -p 0 -X stuff 'stop\n'
-    while [ true ]
-    do 
-        if ! screen -list | grep -q "bedrock"; then
-            echo -ne "\r You Server on execute"
-            break
-        fi
-    done
+    if ! screen -list | grep -q "bedrock"; then
+        screen -S bedrock -p 0 -X stuff 'stop\n'
+        while [ true ]
+        do 
+            if ! screen -list | grep -q "bedrock"; then
+                echo -ne "\r You Server on execute"
+                break
+            fi
+        done
+    else
+        echo "You Server is not executing to is restart"
+    fi
 }
 
 stopbackup(){
-    echo "server in stop in 10 Sec to backup"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 10 Sec to backup\n'
-        sleep 1s
-    echo "server in stop in 9 Sec to backup"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 9 Sec to backup\n'
-        sleep 1s
-    echo "server in stop in 8 Sec to backup"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 8 Sec to backup\n'
-        sleep 1s
-    echo "server in stop in 7 Sec to backup"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 7 Sec to backup\n'
-        sleep 1s
-    echo "server in stop in 6 Sec to backup"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 6 Sec to backup\n'
-        sleep 1s
-    echo "server in stop in 5 Sec to backup"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 5 Sec to backup\n'
-        sleep 1s
-    echo "server in stop in 4 Sec to backup"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 4 Sec to backup\n'
-        sleep 1s
-    echo "server in stop in 3 Sec to backup"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 3 Sec to backup\n'
-        sleep 1s
-    echo "server in stop in 2 Sec to backup"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 2 Sec to backup\n'
-        sleep 1s
-    echo "server in stop in 1 Sec to backup"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 1 Sec to backup\n'
-        sleep 1s
-    echo "server in stop in 0 Sec to backup"
-    screen -S bedrock -p 0 -X stuff 'say server in stop in 0 Sec to backup\n'
-        sleep 1s
-    screen -S bedrock -p 0 -X stuff 'stop\n'
-    while [ true ]
-    do 
-        if ! screen -list | grep -q "bedrock"; then
-            echo
-            bds-backup
-            break
-        fi
-    done
+    if ! screen -list | grep -q "bedrock"; then
+        echo "server in stop in 10 Sec to backup"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 10 Sec to backup\n'
+            sleep 1s
+        echo "server in stop in 9 Sec to backup"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 9 Sec to backup\n'
+            sleep 1s
+        echo "server in stop in 8 Sec to backup"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 8 Sec to backup\n'
+            sleep 1s
+        echo "server in stop in 7 Sec to backup"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 7 Sec to backup\n'
+            sleep 1s
+        echo "server in stop in 6 Sec to backup"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 6 Sec to backup\n'
+            sleep 1s
+        echo "server in stop in 5 Sec to backup"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 5 Sec to backup\n'
+            sleep 1s
+        echo "server in stop in 4 Sec to backup"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 4 Sec to backup\n'
+            sleep 1s
+        echo "server in stop in 3 Sec to backup"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 3 Sec to backup\n'
+            sleep 1s
+        echo "server in stop in 2 Sec to backup"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 2 Sec to backup\n'
+            sleep 1s
+        echo "server in stop in 1 Sec to backup"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 1 Sec to backup\n'
+            sleep 1s
+        echo "server in stop in 0 Sec to backup"
+        screen -S bedrock -p 0 -X stuff 'say server in stop in 0 Sec to backup\n'
+            sleep 1s
+        screen -S bedrock -p 0 -X stuff 'stop\n'
+        while [ true ]
+        do 
+            if ! screen -list | grep -q "bedrock"; then
+                echo
+                bds-backup
+                break
+            fi
+        done
+    else
+        echo "You Server is not executing to is backup"
+    fi
 }
 
 restartsh23(){
