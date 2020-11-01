@@ -1,0 +1,31 @@
+#!/bin/bash
+if [ "$EUID" -ne 0 ]; then
+    echo "Você não está executando o script com root ou sudo, por favor execute de novo o com: $0 $1"
+    exit 13
+fi
+LLS="$(cat /tmp/mcpe.txt | wc -l)"
+screen -S bedrock -p 0 -X stuff "list\n" && suss=0
+if [ $suss = '0' ];then
+    MOD="$(cat /tmp/mcpe.txt)"
+    while true
+    do
+        if [ "$(cat /tmp/mcpe.txt)" != "$MOD" ]; then
+            break
+        fi
+    done
+    LLS2="$(cat /tmp/mcpe.txt | wc -l)"
+    lista="$(cat /tmp/mcpe.txt | tail -n $(($LLS2 - $LLS))|grep -v 'list'|grep -v 'There are')"
+    for guis in $lista
+    do
+        re="$(echo "$guis"|tr '\r' '@'|sed 's|@||g')"
+        echo "<option value="\"$re\"">$re</option>"
+    done
+    COMMANDS=''
+    suss='a'
+fi
+
+
+
+# list
+# There are 0/10 players online:
+

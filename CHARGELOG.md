@@ -1,3 +1,11 @@
+# 01/11/2020 - Versão 1.5.5
+
+Agora temos um novo comando para o bds-maneger-gui
+um novo arquivo foi adicionado.
+Alguns arquivos forão publicados para corrigir alguns erros.
+
+---
+
 # 21/10/2020 - Version 1.5.3
 
 Modificações gerais para o funcionamento do bds-gui junto com a versão-cli.
