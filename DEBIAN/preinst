@@ -2,7 +2,7 @@
 echo
 echo
 if command -v nginx &> /dev/null;then
-    echo "Vamos atualizar as configurações do nginx"
+    echo "Let's update the nginx settings"
     cp -f "/etc/nginx/sites-available/Minecraft" "/etc/bds-maneger/Minecraft-Nginx-$(TZ=UTC+3 date +"%d_%m_%Y")"
 fi
 echo

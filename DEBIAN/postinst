@@ -1,20 +1,26 @@
 #!/bin/bash
-echo
-echo
+echo '--------------------------------------'
+if [ -d /home/$SUDO_USER ];then
+    if ![ -e /home/$SUDO_USER/bds_maneger.json ];then
+        cp -fv /etc/bds-maneger/exemplo.json /home/$SUDO_USER/bds_maneger.json
+    else
+        echo 'We will not copy bds_maneger.json'
+    fi
+fi
+
 if [ -e /etc/init.d/bds ];then
-    echo "Estamos atualizando os serviços do bds-maneger"
+    echo "We are updating the services of Bds Manager for Debian"
     cp -f /opt/bds-maneger/start-on-system.sh /etc/init.d/bds
     systemctl daemon-reload
 fi
 # ---------------------------
-if [ -e /etc/bds-maneger/install.json ];then
-    echo "Por Favor modifique o install.json, podemos ter modificado algo. as modificações estão no exemplo.json"
+if [ -e /home/$SUDO_USER/bds_maneger.json ];then
+    echo "Please modify the install.json, we may have modified something. the modifications are in the example.json"
 fi
 if command -v nginx &> /dev/null;then
-    echo "Reiniciando os Serviços do nginx"
+    echo "Restarting nginx Services"
     service nginx restart
-    echo "Não esqueça as portas são: IP/host:8080"
+    echo "Don't forget the ports are: IP/host:8080"
 fi
-echo
-echo
+echo '--------------------------------------'
 exit 0

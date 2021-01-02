@@ -6,11 +6,11 @@ case `arch` in
     aarch64) GDRIVEP=gdrive_arm64;;
     *) echo "Não temos uma versão suportada"
 esac
-if ! cat /etc/bds-maneger/install.json | grep -q '//';then
+if ! cat /home/$SUDO_USER/bds_maneger.json | grep -q '//';then
     echo "You install.json have coment lines"
     exit 127
 fi
-BC1=$(cat /etc/bds-maneger/install.json | jq ".backup.active" | sed 's|"||g')
+BC1=$(cat /home/$SUDO_USER/bds_maneger.json | jq ".backup.active" | sed 's|"||g')
 case $BC1 in
     off|OFF) echo "Não Havera backup, pois esta off";exit;;
     '') echo "Nenhuma informação foi Fornecida, Não Havera backup";exit;;
@@ -24,8 +24,8 @@ esac
         echo "Gdrive Program Version: $GDRIVEP"
         # VAR
             PATH_TO_INSTALL="/etc/BDS-Common/worlds"
-            ROOTID="$(cat /etc/bds-maneger/install.json | jq ".backup.ID" | sed 's|"||g')"
-            BACKUP="$(cat /etc/bds-maneger/install.json | jq ".backup.local" | sed 's|"||g')"
+            ROOTID="$(cat /home/$SUDO_USER/bds_maneger.json | jq ".backup.ID" | sed 's|"||g')"
+            BACKUP="$(cat /home/$SUDO_USER/bds_maneger.json | jq ".backup.local" | sed 's|"||g')"
         # Datas
             DATE=$(TZ=UTC+3 date +"%d-%m-%Y_%H-%M-%S")
             GDRIVEDATE="$(TZ=UTC+3 date +"%d/%m/%Y-%H-%M-%S")"

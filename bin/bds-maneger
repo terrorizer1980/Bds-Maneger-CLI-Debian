@@ -9,20 +9,20 @@ if [ "$EUID" -ne $ROOTS ]; then
     echo "Você não está executando o script com root ou sudo, por favor execute de novo o com: $0 $1"
     exit 23
 fi
-if [[ -e /etc/bds-maneger/install.json ]];then
+if [[ -e /home/$SUDO_USER/bds_maneger.json ]];then
     test
 else
     echo "Por favor coloque um aquivo com o nome install.json na pasta /etc/bds-maneger ou se não, copia e renomeia o arquivo exemplo_install.jsonc"
     exit 127
 fi
-if ! cat /etc/bds-maneger/install.json | grep -q '//';then
+if ! cat /home/$SUDO_USER/bds_maneger.json | grep -q '//';then
     echo "You install.json have coment lines"
     exit 127
 fi
 # --------------- Codigo ------------------------------
  TMP=/tmp/Minecraft-temp
  mkdir $TMP &> /dev/null
- DOMAINTEST=$(cat "/etc/bds-maneger/install.json" | jq ".pages.domain" | sed 's|"||g')
+ DOMAINTEST=$(cat "/home/$SUDO_USER/bds_maneger.json" | jq ".pages.domain" | sed 's|"||g')
  IPDOMAIN="$([ $DOMAINTEST = 'null' ] && wget -qO- http://ipecho.net/plain || echo $DOMAINTEST)"
  IP_V4="$(ip addr | grep 'inet' | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1)"
  IP_V6="$(ifconfig | grep "inet6" | awk -F' ' '{print $2}' | awk '{print $1}' | head -1) "
