@@ -1,6 +1,11 @@
+Maintenance Stops
+===
+
+After the new release of the [Bds Manger API](https://github.com/Bds-Maneger/bds_maneger_api) versions based on Shell Script are being maintained with less attention, if it is not updated for some years I strongly recommend using version based on NodeJS
+
 # For a script in which you can do it manually.
 
-Esse script apareceu para simplificar uma forma de gerência o Minecraft Bedrock Server, em vez de ficar escrevendo e parando o servidor deixe tudo ser feito por um script, Maintenance, management and backup. All in one place with just a few commands.
+This script appeared to simplify a way of managing Minecraft Bedrock Server, instead of writing and stopping the server, let everything be done by a script, Maintenance, management and backup. All in one place with just a few commands.
 
 If you do not want to write several commands just use the bds-gui that is, a small extension for bds-cli, as usual open source for maintenance and contribution to the project. Link: https://github.com/Sirherobrine23/Bds-Maneger-GUI
 

@@ -5,13 +5,14 @@
 # Required-Start:       $network
 # Required-Stop:        
 # Default-Start:        2 3 4 5
-# Default-Stop:         
+# Default-Stop:         2 3 4 5 6 7 8 9
 # Short-Description:    Minecraft Manager stating Minecraft Bedrock Server
 ### END INIT INFO
 
 NAME="bds"
 if [[ "$EUID" -ne 0 ]]; then
-echo "You not execute command with sudo or root user";exit 1
+echo "You not execute command with sudo or root user"
+exit 1
 fi
 startsh23(){
 if ! screen -list | grep -q "bedrock"; then
@@ -25,28 +26,6 @@ stopnomal(){
     if ! screen -list | grep -q "bedrock"; then
         echo -ne "\r Not possible stop server or server is not on execute."
     else
-        echo "server in stop in 10 Sec";screen -S bedrock -p 0 -X stuff 'say server in stop in 10 Sec\n'
-            sleep 1s
-        echo "server in stop in 9 Sec";screen -S bedrock -p 0 -X stuff 'say server in stop in 9 Sec\n'
-            sleep 1s
-        echo "server in stop in 8 Sec";screen -S bedrock -p 0 -X stuff 'say server in stop in 8 Sec\n'
-            sleep 1s
-        echo "server in stop in 7 Sec";screen -S bedrock -p 0 -X stuff 'say server in stop in 7 Sec\n'
-            sleep 1s
-        echo "server in stop in 6 Sec";screen -S bedrock -p 0 -X stuff 'say server in stop in 6 Sec\n'
-            sleep 1s
-        echo "server in stop in 5 Sec";screen -S bedrock -p 0 -X stuff 'say server in stop in 5 Sec\n'
-            sleep 1s
-        echo "server in stop in 4 Sec";screen -S bedrock -p 0 -X stuff 'say server in stop in 4 Sec\n'
-            sleep 1s
-        echo "server in stop in 3 Sec";screen -S bedrock -p 0 -X stuff 'say server in stop in 3 Sec\n'
-            sleep 1s
-        echo "server in stop in 2 Sec";screen -S bedrock -p 0 -X stuff 'say server in stop in 2 Sec\n'
-            sleep 1s
-        echo "server in stop in 1 Sec";screen -S bedrock -p 0 -X stuff 'say server in stop in 1 Sec\n'
-            sleep 1s
-        echo "server in stop in 0 Sec";screen -S bedrock -p 0 -X stuff 'say server in stop in 0 Sec\n'
-            sleep 1s
         screen -S bedrock -p 0 -X stuff 'stop\n'
         # 
         while [ true ]
@@ -77,14 +56,6 @@ stopbackup(){
     if ! screen -list | grep -q "bedrock"; then
         echo -ne "\r Not possible restart server or server is not on execute."
     else
-        echo "server in stop in 3 Sec to backup";screen -S bedrock -p 0 -X stuff 'say server in stop in 3 Sec to backup\n'
-            sleep 1s
-        echo "server in stop in 2 Sec to backup";screen -S bedrock -p 0 -X stuff 'say server in stop in 2 Sec to backup\n'
-            sleep 1s
-        echo "server in stop in 1 Sec to backup";screen -S bedrock -p 0 -X stuff 'say server in stop in 1 Sec to backup\n'
-            sleep 1s
-        echo "server in stop in 0 Sec to backup";screen -S bedrock -p 0 -X stuff 'say server in stop in 0 Sec to backup\n'
-            sleep 1s
         screen -S bedrock -p 0 -X stuff 'stop\n'
         while [ true ]
         do 

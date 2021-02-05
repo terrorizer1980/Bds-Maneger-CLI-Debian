@@ -1,8 +1,8 @@
-Package: bds-maneger
-Version: 1.5.5
+Package: bds-maneger-debian
+Version: 1.5.6
 Section: bysh23
 Architecture: all
-Homepage: https://github.com/Sirherobrine23/bds-maneger
+Homepage: https://github.com/Bds-Maneger/Bds-Maneger-CLI-Debian
 Essential: no
 Depends: screen, dos2unix, jq, zip, unzip, net-tools, bds-common, gdrive, figlet, whiptail, speedtest-cli
 Conflicts: bds, bds-install
